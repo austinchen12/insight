@@ -15,18 +15,14 @@ const app = new Elysia()
 	.post(
 		"/articles",
 		async ({ body }) => {
-			await db.insert(articles).values({
-				...body,
-			});
+			await db.insert(articles).values(body);
 		},
 		{ body: insertArticles }
 	)
 	.post(
 		"/specific_points",
 		async ({ body }) => {
-			await db.insert(specificPoints).values({
-				...body,
-			});
+			await db.insert(specificPoints).values(body);
 		},
 		{ body: insertSpecificPoints }
 	)
