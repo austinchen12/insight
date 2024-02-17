@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 import { db } from "./db";
 import {
@@ -26,11 +26,15 @@ const app = new Elysia()
 		},
 		{ body: insertSpecificPoints }
 	)
-	.put("/specific_points", async ({ body }) => {
-		await db.update(specificPoints).set({
-			supersetPointId: body.supersetPointId,
-		});
-	})
+	.put(
+		"/specific_points",
+		async ({ body }) => {
+			await db.update(specificPoints).set({
+				superset_point_id: body.superset_point_id,
+			});
+		},
+		{ body: t.Pick(insertSpecificPoints, ["superset_point_id"]) }
+	)
 	.post(
 		"/superset_points",
 		async ({ body }) => {
