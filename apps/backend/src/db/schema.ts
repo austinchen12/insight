@@ -1,42 +1,42 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { customAlphabet } from "nanoid";
-import { z } from "zod";
+import { Static, t } from "elysia";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
-export const biasSchema = z
-	.tuple([
-		z.tuple([
-			z.object({
-				label: z.union([z.literal("Non-biased"), z.literal("Biased")]),
-				score: z.number(),
+export const biasSchema = t
+	.Tuple([
+		t.Tuple([
+			t.Object({
+				label: t.Union([t.Literal("Non-biased"), t.Literal("Biased")]),
+				score: t.Number(),
 			}),
 		]),
 	])
-	.transform((bias) => bias[0][0]);
+	// .transform((bias) => bias[0][0]);
 
-export const sentimentSchema = z
-	.tuple([
-		z.tuple([
-			z.object({
-				label: z.literal("POS"),
-				score: z.number(),
+export const sentimentSchema = t
+	.Tuple([
+		t.Tuple([
+			t.Object({
+				label: t.Literal("POS"),
+				score: t.Number(),
 			}),
-			z.object({
-				label: z.literal("NEU"),
-				score: z.number(),
+			t.Object({
+				label: t.Literal("NEU"),
+				score: t.Number(),
 			}),
-			z.object({
-				label: z.literal("NEG"),
-				score: z.number(),
+			t.Object({
+				label: t.Literal("NEG"),
+				score: t.Number(),
 			}),
 		]),
 	])
-	.transform((sentiment) => sentiment[0]);
+	// .transform((sentiment) => sentiment[0]);
 
-export type Bias = z.infer<typeof biasSchema>;
-export type Sentiment = z.infer<typeof sentimentSchema>;
+export type Bias = Static<typeof biasSchema>;
+export type Sentiment = Static<typeof sentimentSchema>;
 
 export const articles = sqliteTable("articles", {
 	id: text("id")
