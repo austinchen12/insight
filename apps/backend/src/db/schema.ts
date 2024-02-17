@@ -5,35 +5,33 @@ import { Static, t } from "elysia";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
-export const biasSchema = t
-	.Tuple([
-		t.Tuple([
-			t.Object({
-				label: t.Union([t.Literal("Non-biased"), t.Literal("Biased")]),
-				score: t.Number(),
-			}),
-		]),
-	])
-	// .transform((bias) => bias[0][0]);
+export const biasSchema = t.Tuple([
+	t.Tuple([
+		t.Object({
+			label: t.Union([t.Literal("Non-biased"), t.Literal("Biased")]),
+			score: t.Number(),
+		}),
+	]),
+]);
+// .transform((bias) => bias[0][0]);
 
-export const sentimentSchema = t
-	.Tuple([
-		t.Tuple([
-			t.Object({
-				label: t.Literal("POS"),
-				score: t.Number(),
-			}),
-			t.Object({
-				label: t.Literal("NEU"),
-				score: t.Number(),
-			}),
-			t.Object({
-				label: t.Literal("NEG"),
-				score: t.Number(),
-			}),
-		]),
-	])
-	// .transform((sentiment) => sentiment[0]);
+export const sentimentSchema = t.Tuple([
+	t.Tuple([
+		t.Object({
+			label: t.Literal("POS"),
+			score: t.Number(),
+		}),
+		t.Object({
+			label: t.Literal("NEU"),
+			score: t.Number(),
+		}),
+		t.Object({
+			label: t.Literal("NEG"),
+			score: t.Number(),
+		}),
+	]),
+]);
+// .transform((sentiment) => sentiment[0]);
 
 export type Bias = Static<typeof biasSchema>;
 export type Sentiment = Static<typeof sentimentSchema>;
@@ -49,7 +47,10 @@ export const articles = sqliteTable("articles", {
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
 
-export const insertArticles = createInsertSchema(articles);
+export const insertArticles = createInsertSchema(articles, {
+	bias: biasSchema,
+	sentiment: sentimentSchema,
+});
 
 export const specificPoints = sqliteTable("specific_points", {
 	id: text("id")
@@ -63,7 +64,10 @@ export const specificPoints = sqliteTable("specific_points", {
 	superset_point_id: text("superset_point_id").notNull(),
 });
 
-export const insertSpecificPoints = createInsertSchema(specificPoints);
+export const insertSpecificPoints = createInsertSchema(specificPoints, {
+	bias: biasSchema,
+	sentiment: sentimentSchema,
+});
 
 export const supersetPoints = sqliteTable("superset_points", {
 	id: text("id")
