@@ -1,4 +1,5 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { customAlphabet } from "nanoid";
 import { z } from "zod";
 
@@ -48,6 +49,8 @@ export const articles = sqliteTable("articles", {
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
 
+export const insertArticles = createInsertSchema(articles);
+
 export const specificPoints = sqliteTable("specific_points", {
 	id: text("id")
 		.primaryKey()
@@ -60,6 +63,8 @@ export const specificPoints = sqliteTable("specific_points", {
 	supersetPointId: text("superset_point_id").notNull(),
 });
 
+export const insertSpecificPoints = createInsertSchema(specificPoints);
+
 export const supersetPoints = sqliteTable("superset_points", {
 	id: text("id")
 		.primaryKey()
@@ -67,3 +72,5 @@ export const supersetPoints = sqliteTable("superset_points", {
 	titleGenerated: text("title_generated").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
+
+export const insertSupersetPoints = createInsertSchema(supersetPoints);
