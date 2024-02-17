@@ -7,7 +7,7 @@ const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
 export const sentimentSchema = t.Tuple([
 	t.Object({
-		label: t.Literal("POS"),
+		label: t.Literal("NEG"),
 		score: t.Number(),
 	}),
 	t.Object({
@@ -15,7 +15,7 @@ export const sentimentSchema = t.Tuple([
 		score: t.Number(),
 	}),
 	t.Object({
-		label: t.Literal("NEG"),
+		label: t.Literal("POS"),
 		score: t.Number(),
 	}),
 ]);
