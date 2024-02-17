@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "7b28109e-2bd2-4fa1-9ed0-62a0802a2fc8",
+  "id": "ecec1059-5e25-4dcc-acf8-501be10372d9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "articles": {
@@ -30,7 +30,7 @@
         },
         "bias": {
           "name": "bias",
-          "type": "text",
+          "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -88,7 +88,7 @@
         },
         "bias": {
           "name": "bias",
-          "type": "text",
+          "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
