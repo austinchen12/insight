@@ -1,5 +1,8 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { customAlphabet } from "nanoid";
 import { z } from "zod";
+
+const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
 export const biasSchema = z.tuple([
 	z.tuple([
@@ -31,7 +34,9 @@ export type Bias = z.infer<typeof biasSchema>;
 export type Sentiment = z.infer<typeof sentimentSchema>;
 
 export const articles = sqliteTable("articles", {
-	id: text("id").primaryKey().notNull(),
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => nanoid()),
 	title: text("title").notNull(),
 	bias: text("bias", { mode: "json" }).notNull(),
 	sentiment: text("sentiment", { mode: "json" }).notNull(),
@@ -39,7 +44,9 @@ export const articles = sqliteTable("articles", {
 });
 
 export const specificPoints = sqliteTable("specific_points", {
-	id: text("id").primaryKey().notNull(),
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => nanoid()),
 	articleId: text("article_id").notNull(),
 	originalExcerpt: text("original_excerpt").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
@@ -49,7 +56,9 @@ export const specificPoints = sqliteTable("specific_points", {
 });
 
 export const supersetPoints = sqliteTable("superset_points", {
-	id: text("id").primaryKey().notNull(),
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => nanoid()),
 	titleGenerated: text("title_generated").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
