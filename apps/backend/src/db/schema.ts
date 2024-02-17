@@ -1,32 +1,9 @@
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
-import { customAlphabet } from "nanoid";
+import { real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { createInsertSchema } from "drizzle-typebox";
 import { Static, t } from "elysia";
+import { customAlphabet } from "nanoid";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
-
-export const biasSchema = t.Union([
-	t.Tuple([
-		t.Object({
-			label: t.Literal("Non-biased"),
-			score: t.Number(),
-		}),
-		t.Object({
-			label: t.Literal("Biased"),
-			score: t.Number(),
-		}),
-	]),
-	t.Tuple([
-		t.Object({
-			label: t.Literal("Biased"),
-			score: t.Number(),
-		}),
-		t.Object({
-			label: t.Literal("Non-biased"),
-			score: t.Number(),
-		}),
-	]),
-]);
 
 export const sentimentSchema = t.Tuple([
 	t.Object({
@@ -43,7 +20,6 @@ export const sentimentSchema = t.Tuple([
 	}),
 ]);
 
-export type Bias = Static<typeof biasSchema>;
 export type Sentiment = Static<typeof sentimentSchema>;
 
 export const articles = sqliteTable("articles", {
@@ -52,13 +28,12 @@ export const articles = sqliteTable("articles", {
 		.$defaultFn(() => nanoid()),
 	title: text("title").notNull(),
 	url: text("url").notNull(),
-	bias: text("bias", { mode: "json" }).$type<Bias>().notNull(),
+	bias: real("bias").notNull(),
 	sentiment: text("sentiment", { mode: "json" }).$type<Sentiment>().notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
 
 export const insertArticles = createInsertSchema(articles, {
-	bias: biasSchema,
 	sentiment: sentimentSchema,
 });
 
@@ -69,13 +44,12 @@ export const specificPoints = sqliteTable("specific_points", {
 	article_id: text("article_id").notNull(),
 	original_excerpt: text("original_excerpt").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
-	bias: text("bias", { mode: "json" }).$type<Bias>().notNull(),
+	bias: real("bias").notNull(),
 	sentiment: text("sentiment", { mode: "json" }).$type<Sentiment>().notNull(),
 	superset_point_id: text("superset_point_id").notNull(),
 });
 
 export const insertSpecificPoints = createInsertSchema(specificPoints, {
-	bias: biasSchema,
 	sentiment: sentimentSchema,
 });
 
