@@ -5,20 +5,11 @@ import { customAlphabet } from "nanoid";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
-export const sentimentSchema = t.Tuple([
-	t.Object({
-		label: t.Literal("NEG"),
-		score: t.Number(),
-	}),
-	t.Object({
-		label: t.Literal("NEU"),
-		score: t.Number(),
-	}),
-	t.Object({
-		label: t.Literal("POS"),
-		score: t.Number(),
-	}),
-]);
+export const sentimentSchema = t.Object({
+	NEG: t.Number(),
+	NEU: t.Number(),
+	POS: t.Number(),
+});
 
 export type Sentiment = Static<typeof sentimentSchema>;
 
