@@ -43,3 +43,5 @@ const app = new Elysia()
 		{ body: insertSupersetPoints }
 	)
 	.listen(3000);
+
+export type App = typeof app;
