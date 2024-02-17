@@ -5,11 +5,11 @@ import os
 
 BIAS_URL = "https://api-inference.huggingface.co/models/d4data/bias-detection-model"
 SENTIMENT_URL = "https://api-inference.huggingface.co/models/finiteautomata/bertweet-base-sentiment-analysis"
-API_TOKEN = "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"
+API_TOKEN = os.environ.get("HUGGING_FACE_TOKEN")
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
 client = OpenAI(
-    api_key="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",
+    api_key = os.environ.get("OPENAI_API_KEY"),
 )
 
 
@@ -31,16 +31,22 @@ def fetch_article(url):
     
 
 def detect_bias(input):
-	response = requests.post(BIAS_URL, headers=headers, json={
+    response = requests.post(BIAS_URL, headers=headers, json={
         "inputs": input
     })
-	return response.json()
+    bias = response.json()[0][0]['score']
+
+    return bias
 
 def detect_sentiment(input):
-	response = requests.post(SENTIMENT_URL, headers=headers, json={
+    response = requests.post(SENTIMENT_URL, headers=headers, json={
         "inputs": input
     })
-	return response.json()
+    sentiment = {}
+    for obj in response.json()[0]:
+        sentiment[obj['label']] = obj['score']
+
+    return sentiment
 
 def main():
     parser = argparse.ArgumentParser()
