@@ -4,31 +4,35 @@ import { z } from "zod";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
-export const biasSchema = z.tuple([
-	z.tuple([
-		z.object({
-			label: z.union([z.literal("Non-biased"), z.literal("Biased")]),
-			score: z.number(),
-		}),
-	]),
-]);
+export const biasSchema = z
+	.tuple([
+		z.tuple([
+			z.object({
+				label: z.union([z.literal("Non-biased"), z.literal("Biased")]),
+				score: z.number(),
+			}),
+		]),
+	])
+	.transform((bias) => bias[0][0]);
 
-export const sentimentSchema = z.tuple([
-	z.tuple([
-		z.object({
-			label: z.literal("POS"),
-			score: z.number(),
-		}),
-		z.object({
-			label: z.literal("NEU"),
-			score: z.number(),
-		}),
-		z.object({
-			label: z.literal("NEG"),
-			score: z.number(),
-		}),
-	]),
-]);
+export const sentimentSchema = z
+	.tuple([
+		z.tuple([
+			z.object({
+				label: z.literal("POS"),
+				score: z.number(),
+			}),
+			z.object({
+				label: z.literal("NEU"),
+				score: z.number(),
+			}),
+			z.object({
+				label: z.literal("NEG"),
+				score: z.number(),
+			}),
+		]),
+	])
+	.transform((sentiment) => sentiment[0]);
 
 export type Bias = z.infer<typeof biasSchema>;
 export type Sentiment = z.infer<typeof sentimentSchema>;
