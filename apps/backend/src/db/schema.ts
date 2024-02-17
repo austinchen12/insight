@@ -55,12 +55,12 @@ export const specificPoints = sqliteTable("specific_points", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => nanoid()),
-	articleId: text("article_id").notNull(),
-	originalExcerpt: text("original_excerpt").notNull(),
+	article_id: text("article_id").notNull(),
+	original_excerpt: text("original_excerpt").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
 	bias: text("bias", { mode: "json" }).$type<Bias>().notNull(),
 	sentiment: text("sentiment", { mode: "json" }).$type<Sentiment>().notNull(),
-	supersetPointId: text("superset_point_id").notNull(),
+	superset_point_id: text("superset_point_id").notNull(),
 });
 
 export const insertSpecificPoints = createInsertSchema(specificPoints);
@@ -69,7 +69,7 @@ export const supersetPoints = sqliteTable("superset_points", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => nanoid()),
-	titleGenerated: text("title_generated").notNull(),
+	title_generated: text("title_generated").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
 
