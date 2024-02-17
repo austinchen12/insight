@@ -33,8 +33,8 @@ export const sentimentSchema = t.Tuple([
 ]);
 // .transform((sentiment) => sentiment[0]);
 
-export type Bias = Static<typeof biasSchema>;
-export type Sentiment = Static<typeof sentimentSchema>;
+export type Bias = Static<typeof biasSchema>[0];
+export type Sentiment = Static<typeof sentimentSchema>[0][0];
 
 export const articles = sqliteTable("articles", {
 	id: text("id")
