@@ -42,6 +42,7 @@ export const articles = sqliteTable("articles", {
 		.primaryKey()
 		.$defaultFn(() => nanoid()),
 	title: text("title").notNull(),
+	url: text("url").notNull(),
 	bias: text("bias", { mode: "json" }).$type<Bias>().notNull(),
 	sentiment: text("sentiment", { mode: "json" }).$type<Sentiment>().notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
