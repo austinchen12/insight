@@ -1,42 +1,17 @@
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
+import { real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { createInsertSchema } from "drizzle-typebox";
+import { Static, t } from "elysia";
 import { customAlphabet } from "nanoid";
-import { z } from "zod";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
-export const biasSchema = z
-	.tuple([
-		z.tuple([
-			z.object({
-				label: z.union([z.literal("Non-biased"), z.literal("Biased")]),
-				score: z.number(),
-			}),
-		]),
-	])
-	.transform((bias) => bias[0][0]);
+export const sentimentSchema = t.Object({
+	NEG: t.Number(),
+	NEU: t.Number(),
+	POS: t.Number(),
+});
 
-export const sentimentSchema = z
-	.tuple([
-		z.tuple([
-			z.object({
-				label: z.literal("POS"),
-				score: z.number(),
-			}),
-			z.object({
-				label: z.literal("NEU"),
-				score: z.number(),
-			}),
-			z.object({
-				label: z.literal("NEG"),
-				score: z.number(),
-			}),
-		]),
-	])
-	.transform((sentiment) => sentiment[0]);
-
-export type Bias = z.infer<typeof biasSchema>;
-export type Sentiment = z.infer<typeof sentimentSchema>;
+export type Sentiment = Static<typeof sentimentSchema>;
 
 export const articles = sqliteTable("articles", {
 	id: text("id")
@@ -44,12 +19,14 @@ export const articles = sqliteTable("articles", {
 		.$defaultFn(() => nanoid()),
 	title: text("title").notNull(),
 	url: text("url").notNull(),
-	bias: text("bias", { mode: "json" }).$type<Bias>().notNull(),
+	bias: real("bias").notNull(),
 	sentiment: text("sentiment", { mode: "json" }).$type<Sentiment>().notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
 
-export const insertArticles = createInsertSchema(articles);
+export const insertArticles = createInsertSchema(articles, {
+	sentiment: sentimentSchema,
+});
 
 export const specificPoints = sqliteTable("specific_points", {
 	id: text("id")
@@ -58,12 +35,14 @@ export const specificPoints = sqliteTable("specific_points", {
 	article_id: text("article_id").notNull(),
 	original_excerpt: text("original_excerpt").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
-	bias: text("bias", { mode: "json" }).$type<Bias>().notNull(),
+	bias: real("bias").notNull(),
 	sentiment: text("sentiment", { mode: "json" }).$type<Sentiment>().notNull(),
 	superset_point_id: text("superset_point_id").notNull(),
 });
 
-export const insertSpecificPoints = createInsertSchema(specificPoints);
+export const insertSpecificPoints = createInsertSchema(specificPoints, {
+	sentiment: sentimentSchema,
+});
 
 export const supersetPoints = sqliteTable("superset_points", {
 	id: text("id")
