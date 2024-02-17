@@ -42,8 +42,8 @@ export const articles = sqliteTable("articles", {
 		.primaryKey()
 		.$defaultFn(() => nanoid()),
 	title: text("title").notNull(),
-	bias: text("bias", { mode: "json" }).notNull(),
-	sentiment: text("sentiment", { mode: "json" }).notNull(),
+	bias: text("bias", { mode: "json" }).$type<Bias>().notNull(),
+	sentiment: text("sentiment", { mode: "json" }).$type<Sentiment>().notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
 
@@ -54,8 +54,8 @@ export const specificPoints = sqliteTable("specific_points", {
 	articleId: text("article_id").notNull(),
 	originalExcerpt: text("original_excerpt").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
-	bias: text("bias", { mode: "json" }).notNull(),
-	sentiment: text("sentiment", { mode: "json" }).notNull(),
+	bias: text("bias", { mode: "json" }).$type<Bias>().notNull(),
+	sentiment: text("sentiment", { mode: "json" }).$type<Sentiment>().notNull(),
 	supersetPointId: text("superset_point_id").notNull(),
 });
 
