@@ -17,8 +17,6 @@ const app = new Elysia()
 		async ({ body }) => {
 			await db.insert(articles).values({
 				...body,
-				bias: body.bias[0],
-				sentiment: body.sentiment[0][0],
 			});
 		},
 		{ body: insertArticles }
@@ -28,8 +26,6 @@ const app = new Elysia()
 		async ({ body }) => {
 			await db.insert(specificPoints).values({
 				...body,
-				bias: body.bias[0],
-				sentiment: body.sentiment[0][0],
 			});
 		},
 		{ body: insertSpecificPoints }

@@ -5,36 +5,46 @@ import { Static, t } from "elysia";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
-export const biasSchema = t.Tuple([
+export const biasSchema = t.Union([
 	t.Tuple([
 		t.Object({
-			label: t.Union([t.Literal("Non-biased"), t.Literal("Biased")]),
+			label: t.Literal("Non-biased"),
+			score: t.Number(),
+		}),
+		t.Object({
+			label: t.Literal("Biased"),
+			score: t.Number(),
+		}),
+	]),
+	t.Tuple([
+		t.Object({
+			label: t.Literal("Biased"),
+			score: t.Number(),
+		}),
+		t.Object({
+			label: t.Literal("Non-biased"),
 			score: t.Number(),
 		}),
 	]),
 ]);
-// .transform((bias) => bias[0][0]);
 
 export const sentimentSchema = t.Tuple([
-	t.Tuple([
-		t.Object({
-			label: t.Literal("POS"),
-			score: t.Number(),
-		}),
-		t.Object({
-			label: t.Literal("NEU"),
-			score: t.Number(),
-		}),
-		t.Object({
-			label: t.Literal("NEG"),
-			score: t.Number(),
-		}),
-	]),
+	t.Object({
+		label: t.Literal("POS"),
+		score: t.Number(),
+	}),
+	t.Object({
+		label: t.Literal("NEU"),
+		score: t.Number(),
+	}),
+	t.Object({
+		label: t.Literal("NEG"),
+		score: t.Number(),
+	}),
 ]);
-// .transform((sentiment) => sentiment[0]);
 
-export type Bias = Static<typeof biasSchema>[0];
-export type Sentiment = Static<typeof sentimentSchema>[0][0];
+export type Bias = Static<typeof biasSchema>;
+export type Sentiment = Static<typeof sentimentSchema>;
 
 export const articles = sqliteTable("articles", {
 	id: text("id")
