@@ -1,24 +1,28 @@
+import logo from "data-base64:~assets/icon.png";
 import { useState } from "react";
 
+import "~style.css";
+
+import Summary from "~components/Summary";
+import Topics from "~components/Topics";
+
 function IndexPopup() {
-	const [data, setData] = useState("");
+	const [page, setPage] = useState<"summary" | "topics">("summary");
 
 	return (
-		<div
-			style={{
-				padding: 16,
-			}}>
-			<h2>
-				Welcome to your{" "}
-				<a href="https://www.plasmo.com" target="_blank">
-					Plasmo
-				</a>{" "}
-				Extension!
-			</h2>
-			<input onChange={(e) => setData(e.target.value)} value={data} />
-			<a href="https://docs.plasmo.com" target="_blank">
-				View Docs
-			</a>
+		<div className="h-[600px] w-[350px] flex flex-col justify-between bg-bg ">
+			<div>
+				{/* Header */}
+				<div className="h-[2rem] flex justify-between items-center px-4 border-b border-white">
+					<h1>Insight Critter</h1>
+					<img src={logo} alt="Icon" draggable={false} className="h-8 w-8" />
+				</div>
+
+				{page == "summary" ? <Summary /> : <Topics />}
+			</div>
+
+			{/* Footer */}
+			<div className="h-[2rem] "></div>
 		</div>
 	);
 }
