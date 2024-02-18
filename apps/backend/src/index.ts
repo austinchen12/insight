@@ -21,24 +21,26 @@ const router = t.router({
 		.query(({ input: { url } }) => {
 			// ...
 		}),
-	insertArticles: t.procedure.input(insertArticles).query(async ({ input }) => {
-		await db.insert(articles).values(input);
-	}),
+	insertArticles: t.procedure
+		.input(insertArticles)
+		.mutation(async ({ input }) => {
+			await db.insert(articles).values(input);
+		}),
 	insertSpecificPoints: t.procedure
 		.input(insertSpecificPoints)
-		.query(async ({ input }) => {
+		.mutation(async ({ input }) => {
 			await db.insert(specificPoints).values(input);
 		}),
 	updateSpecificPoints: t.procedure
 		.input(insertSpecificPoints)
-		.query(async ({ input }) => {
+		.mutation(async ({ input }) => {
 			await db.update(specificPoints).set({
 				superset_point_id: input.superset_point_id,
 			});
 		}),
 	insertSupersetPoints: t.procedure
 		.input(insertSupersetPoints)
-		.query(async ({ input }) => {
+		.mutation(async ({ input }) => {
 			await db.insert(supersetPoints).values(input);
 		}),
 });
