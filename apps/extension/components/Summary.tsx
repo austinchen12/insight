@@ -1,8 +1,9 @@
-import { useState } from "react";
 import { GoShare } from "react-icons/go";
 import { RadialBar, RadialBarChart } from "recharts";
 
 import { Button } from "~/components/ui/button";
+import { urlToSiteAbbreviation } from "~lib/utils";
+import type { Article, GlobalData } from "~popup";
 
 import {
 	Card,
@@ -12,21 +13,38 @@ import {
 	CardTitle,
 } from "./ui/card";
 
-function Summary() {
+function Summary({ data }: { data: GlobalData }) {
+	const avgRelatedBias =
+		data.relevantArticles.length > 0
+			? (data.relevantArticles.reduce((acc, article) => acc + article.bias, 0) *
+					100) /
+				data.relevantArticles.length
+			: 50;
+
+	const avgRelatedPositive =
+		data.relevantArticles.length > 0
+			? (data.relevantArticles.reduce(
+					(acc, article) => acc + article.sentiment.POS,
+					0
+				) *
+					100) /
+				data.relevantArticles.length
+			: 50;
+
 	// Sample data
 	const biasData = [
 		{
-			name: "B",
+			name: "Placeholder", // Do not remove
 			x: 100,
 		},
 		{
 			name: "This article",
-			x: 30,
+			x: data.thisArticle.bias * 100,
 			fill: "#A059FF",
 		},
 		{
 			name: "Related Articles",
-			x: 63,
+			x: avgRelatedBias,
 			fill: "#11DFFF",
 		},
 	];
@@ -38,96 +56,96 @@ function Summary() {
 		},
 		{
 			name: "This article",
-			x: 54,
+			x: data.thisArticle.sentiment.POS * 100,
 			fill: "#FEA419",
 		},
 		{
 			name: "Related Articles",
-			x: 72,
+			x: avgRelatedPositive,
 			fill: "#FF3B69",
 		},
 	];
 
-	const sampleArticles: {
-		title: string;
-		site: string;
-		bias: string;
-		positive: string;
-		url: string;
-	}[] = [
-		{
-			title:
-				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
-			site: "CNN",
-			bias: "64",
-			positive: "53",
-			url: "https://cnn.com",
-		},
-		{
-			title:
-				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
-			site: "CNN",
-			bias: "64",
-			positive: "53",
-			url: "https://cnn.com",
-		},
-		{
-			title:
-				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
-			site: "CNN",
-			bias: "64",
-			positive: "53",
-			url: "https://cnn.com",
-		},
-		{
-			title:
-				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
-			site: "CNN",
-			bias: "64",
-			positive: "53",
-			url: "https://cnn.com",
-		},
-		{
-			title:
-				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
-			site: "CNN",
-			bias: "64",
-			positive: "53",
-			url: "https://cnn.com",
-		},
-		{
-			title:
-				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
-			site: "CNN",
-			bias: "64",
-			positive: "53",
-			url: "https://cnn.com",
-		},
-		{
-			title:
-				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
-			site: "CNN",
-			bias: "64",
-			positive: "53",
-			url: "https://cnn.com",
-		},
-		{
-			title:
-				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
-			site: "CNN",
-			bias: "64",
-			positive: "53",
-			url: "https://cnn.com",
-		},
-		{
-			title:
-				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
-			site: "CNN",
-			bias: "64",
-			positive: "53",
-			url: "https://cnn.com",
-		},
-	];
+	// const sampleArticles: {
+	// 	title: string;
+	// 	site: string;
+	// 	bias: string;
+	// 	positive: string;
+	// 	url: string;
+	// }[] = [
+	// 	{
+	// 		title:
+	// 			"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
+	// 		site: "CNN",
+	// 		bias: "64",
+	// 		positive: "53",
+	// 		url: "https://cnn.com",
+	// 	},
+	// 	{
+	// 		title:
+	// 			"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
+	// 		site: "CNN",
+	// 		bias: "64",
+	// 		positive: "53",
+	// 		url: "https://cnn.com",
+	// 	},
+	// 	{
+	// 		title:
+	// 			"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
+	// 		site: "CNN",
+	// 		bias: "64",
+	// 		positive: "53",
+	// 		url: "https://cnn.com",
+	// 	},
+	// 	{
+	// 		title:
+	// 			"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
+	// 		site: "CNN",
+	// 		bias: "64",
+	// 		positive: "53",
+	// 		url: "https://cnn.com",
+	// 	},
+	// 	{
+	// 		title:
+	// 			"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
+	// 		site: "CNN",
+	// 		bias: "64",
+	// 		positive: "53",
+	// 		url: "https://cnn.com",
+	// 	},
+	// 	{
+	// 		title:
+	// 			"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
+	// 		site: "CNN",
+	// 		bias: "64",
+	// 		positive: "53",
+	// 		url: "https://cnn.com",
+	// 	},
+	// 	{
+	// 		title:
+	// 			"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
+	// 		site: "CNN",
+	// 		bias: "64",
+	// 		positive: "53",
+	// 		url: "https://cnn.com",
+	// 	},
+	// 	{
+	// 		title:
+	// 			"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
+	// 		site: "CNN",
+	// 		bias: "64",
+	// 		positive: "53",
+	// 		url: "https://cnn.com",
+	// 	},
+	// 	{
+	// 		title:
+	// 			"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
+	// 		site: "CNN",
+	// 		bias: "64",
+	// 		positive: "53",
+	// 		url: "https://cnn.com",
+	// 	},
+	// ];
 
 	return (
 		<div className="flex flex-col gap-2 px-3 py-2 ">
@@ -199,7 +217,7 @@ function Summary() {
 			</h2>
 
 			<div className="flex flex-col gap-2">
-				{sampleArticles.map((article, idx) => (
+				{data.relevantArticles.map((article, idx) => (
 					<ScannedArticle article={article} key={idx} />
 				))}
 			</div>
@@ -208,10 +226,12 @@ function Summary() {
 }
 
 // TODO: format sentiment
-function ScannedArticle({ article }) {
+function ScannedArticle({ article }: { article: Article }) {
 	const openArticle = () => {
-		window.open(article.url, "_blank"); // Open article URL in a new tab
+		window.open(article.url, "_blank");
 	};
+
+	const siteAppreviation = urlToSiteAbbreviation(article.url);
 
 	return (
 		<Card
@@ -220,8 +240,8 @@ function ScannedArticle({ article }) {
 			<CardHeader>
 				<CardTitle className="text-sm">{article.title}</CardTitle>
 				<CardDescription className="text-xs text-primary">
-					{article.site} &#183; {article.bias}% bias &#183; {article.positive}%
-					positive
+					{siteAppreviation} &#183; {article.bias * 100}% bias &#183;{" "}
+					{article.sentiment.POS * 100}% positive
 				</CardDescription>
 			</CardHeader>
 		</Card>
