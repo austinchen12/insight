@@ -1,3 +1,4 @@
+import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { TypeCompiler } from "@sinclair/typebox/compiler";
 import { Elysia, TSchema, t } from "elysia";
@@ -100,9 +101,15 @@ async function execute<T extends TSchema>({
 
 const app = new Elysia()
 	.use(swagger())
+	.use(
+		cors({
+			allowedHeaders: ["*"],
+		})
+	)
 	.get(
 		"/getGlobalData",
-		async ({ body: { url } }): Promise<GlobalData> => {
+		async ({ query }): Promise<GlobalData> => {
+			const { url } = query;
 			const thisArticle = await execute({
 				sql: "SELECT * FROM articles WHERE url = :url",
 				params: { url },
@@ -144,7 +151,7 @@ const app = new Elysia()
 			};
 		},
 		{
-			body: t.Object({ url: t.String() }),
+			query: t.Object({ url: t.String() }),
 		}
 	)
 	.post(
