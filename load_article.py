@@ -1,13 +1,12 @@
-import argparse
 import json
 import uuid
 import requests
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
-from sentence_transformers import SentenceTransformer
 from sklearn.cluster import DBSCAN
 import numpy as np
+from utils import embed_text, fetch_article
 
 load_dotenv(override=True)
 
@@ -20,16 +19,7 @@ client = OpenAI(
     api_key = os.environ.get("OPENAI_API_KEY"),
 )
 
-model = SentenceTransformer('all-MiniLM-L6-v2')
 
-
-def fetch_article(filename):
-    try:
-        with open(filename, 'r') as f:
-            article = f.read()
-            return article
-    except FileNotFoundError:
-        print('Article not found.')
 
 def detect_bias(input):
     try:
@@ -75,9 +65,6 @@ def detect_sentiment(input):
         exit(1)
 
     return sentiment
-
-def embed_text(text):
-    return model.encode(text, normalize_embeddings=True).tolist()
 
 def post_article(article):
     try:

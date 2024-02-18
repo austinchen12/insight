@@ -1,5 +1,7 @@
+from utils import resolver
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine, text
+from utils import embed_text, fetch_article
 
 app = Flask(__name__)
 
@@ -35,18 +37,21 @@ def execute_sql():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/search', methods=['POST'])
-def search():
+@app.route('/find_similar_articles', methods=['POST'])
+def find_similar_articles():
     data = request.json
-    search_vector = data.get('search_vector')
+    url = data.get('url')
+    path = resolver[url] # "articles/Carlson Putin/Alexei Navalny’s death underlines the horrors of Tucker Carlson’s Putin interview..md" # need map from url to path
+    article = fetch_article(path)
 
+    search_vector = embed_text(article)
     sql = text("""
         SELECT *,
         VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) AS dot_product_result
-        FROM superset_points
-        WHERE VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) > 0.5
+        FROM articles
         ORDER BY dot_product_result DESC
     """)
+    #WHERE VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) > 0.6
 
     try:
         with engine.connect() as connection:
@@ -57,4 +62,4 @@ def search():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
