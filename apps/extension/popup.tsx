@@ -4,7 +4,7 @@ import {
 	useQuery,
 } from "@tanstack/react-query";
 import logo from "data-base64:~assets/icon.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaList } from "react-icons/fa";
 import { MdOutlineLibraryBooks } from "react-icons/md";
 
@@ -16,6 +16,8 @@ import "~style.css";
 
 import { app } from "~lib/eden";
 
+import type { GlobalData } from "../backend/src";
+
 const getCurrentTabUrl = async () => {
 	const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 	if (!tab) return "";
@@ -26,28 +28,29 @@ const queryClient = new QueryClient();
 
 function Layout({ children }: { children: React.ReactNode }) {
 	return (
-		<QueryClientProvider client={queryClient}>
-			<div className="font-fredoka h-[600px] w-[400px] flex flex-col">
-				<Header />
-				{children}
-			</div>
-		</QueryClientProvider>
+		<div className="font-fredoka h-[600px] w-[400px] flex flex-col">
+			<Header />
+			{children}
+		</div>
 	);
 }
 
 function IndexPopup() {
 	const [page, setPage] = useState<"summary" | "topics">("summary");
-	const { data, isLoading, isError } = useQuery({
-		queryKey: ["getArticle"],
-		queryFn: async () => {
+	const [data, setData] = useState<GlobalData>();
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		(async () => {
 			const url = await getCurrentTabUrl();
 			const { data, error } = await app.getGlobalData.get({
 				$query: { url },
 			});
 			if (error) throw error;
-			return data;
-		},
-	});
+			setData(data);
+			setIsLoading(false);
+		})();
+	}, []);
 
 	return (
 		<Layout>
