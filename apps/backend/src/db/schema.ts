@@ -1,6 +1,6 @@
 import { InferSelectModel } from "drizzle-orm";
 import { real, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createSelectSchema, createInsertSchema } from "drizzle-typebox";
+import { createInsertSchema } from "drizzle-typebox";
 import { Static, t } from "elysia";
 import { customAlphabet } from "nanoid";
 
