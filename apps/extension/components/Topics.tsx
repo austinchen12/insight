@@ -13,6 +13,19 @@ import {
 import { Button } from "~/components/ui/button";
 import { PinkProgress, PurpleProgress } from "~/components/ui/progress";
 
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "./ui/card";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "./ui/collapsible";
+
 function Topics() {
 	const numArticles = 12;
 
@@ -43,9 +56,9 @@ function Topics() {
 	];
 
 	return (
-		<div className="px-3 py-2">
+		<div className="flex flex-col gap-2 px-3 py-2">
 			<div className="flex justify-between items-center">
-				<h2 className="text-lg text-dark mb-2" style={{ fontWeight: 400 }}>
+				<h2 className="scroll-m-20 text-2xl font-medium tracking-tight">
 					Topics
 				</h2>
 				<p>
@@ -55,7 +68,7 @@ function Topics() {
 			</div>
 
 			{/* Topics overview */}
-			<div className="flex gap-3">
+			<div className="flex gap-2">
 				<TopicOverviewNote
 					stat1={1}
 					stat2={sampleTopics.length}
@@ -84,16 +97,16 @@ function Topics() {
 
 function TopicOverviewNote({ stat1, stat2, title }) {
 	return (
-		<div className="bg-content-box rounded-lg flex flex-col items-center w-full px-2 pb-2 mb-4">
-			<p className="mt-4 text-2xl mb-1 text-black">
+		<Card className="flex flex-col items-center w-full gap-2">
+			<p className="mt-4 text-2xl">
 				{stat1}
-				<span className="text-[#555]">
+				<span>
 					{" / "}
 					{stat2}
 				</span>
 			</p>
 			<p className="text-center">{title}</p>
-		</div>
+		</Card>
 	);
 }
 
@@ -101,67 +114,67 @@ function TopicCard({ topic }) {
 	const [showBreakdown, setShowBreakdown] = useState(false);
 
 	return (
-		<div
-			className={`w-full px-2 py-1 rounded-lg border border-[#A0CA21] mb-1 ${topic.included ? "bg-content-box" : "bg-[#F0FFC5]"}`}>
-			<h3 className="text-[#606060] text-sm mb-1">{topic.title}</h3>
+		<Card className="w-full">
+			<CardHeader>
+				<CardTitle className="text-sm">{topic.title}</CardTitle>
+				<CardDescription>
+					{topic.included ? (
+						<div className="flex gap-1 items-center text-primary/75">
+							<FaCheckCircle className="text-primary/75" />
+							<p>This article includes this topic</p>
+						</div>
+					) : (
+						<div className="flex gap-1 items-center text-muted-foreground/60">
+							<BsFillXCircleFill className="text-muted-foreground/60" />
+							<p>This article does not include this topic</p>
+						</div>
+					)}
+				</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<StatsRow
+					title="This article"
+					stat1Title="biased"
+					stat1Val={topic.bias.this}
+					stat2Title="positive"
+					stat2Val={topic.sentiment.this}
+				/>
+				<StatsRow
+					title="Related articles"
+					stat1Title="biased"
+					stat1Val={topic.bias.others}
+					stat2Title="positive"
+					stat2Val={topic.sentiment.others}
+				/>
 
-			{topic.included ? (
-				<div className="flex gap-1 items-center text-[#8DB613]">
-					<FaCheckCircle color="#A0CA21" />
-					<p>This article includes this topic</p>
-				</div>
-			) : (
-				<div className="flex gap-1 items-center text-[#B3B5AC]">
-					<BsFillXCircleFill color="#B3B5AC" />
-					<p>This article does not include this topic</p>
-				</div>
-			)}
-			<div className="h-2"></div>
-
-			<StatsRow
-				title="This article"
-				stat1Title="biased"
-				stat1Val={topic.bias.this}
-				stat2Title="positive"
-				stat2Val={topic.sentiment.this}
-			/>
-			<StatsRow
-				title="Related articles"
-				stat1Title="biased"
-				stat1Val={topic.bias.others}
-				stat2Title="positive"
-				stat2Val={topic.sentiment.others}
-			/>
-
-			{!showBreakdown ? (
-				<button
-					className="text-xs flex items-center hover:underline gap-1 mt-1 text-dark"
-					onClick={() => setShowBreakdown(true)}>
-					View Breakdown <FaAngleDown />
-				</button>
-			) : (
-				<button
-					className="text-xs flex items-center hover:underline gap-1 mt-1 text-dark"
-					onClick={() => setShowBreakdown(false)}>
-					Hide Breakdown <FaAngleUp />
-				</button>
-			)}
-
-			{showBreakdown && (
-				<div className="border-t border-dark mt-1 pt-1">
-					{topic.sites.map((site, idx) => (
-						<StatsRow
-							key={idx}
-							title={site.name}
-							stat1Title="biased"
-							stat1Val={site.bias}
-							stat2Title="positive"
-							stat2Val={site.sentiment}
-						/>
-					))}
-				</div>
-			)}
-		</div>
+				<Collapsible open={showBreakdown} onOpenChange={setShowBreakdown}>
+					<CollapsibleTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="text-xs hover:underline -ml-3"
+							onClick={() => setShowBreakdown(true)}>
+							{showBreakdown ? "Hide Breakdown" : "View Breakdown"}
+							{showBreakdown ? <FaAngleUp /> : <FaAngleDown />}
+						</Button>
+					</CollapsibleTrigger>
+					<CollapsibleContent>
+						<div className="border-t border-dark mt-1 pt-1">
+							{topic.sites.map((site, idx) => (
+								<StatsRow
+									key={idx}
+									title={site.name}
+									stat1Title="biased"
+									stat1Val={site.bias}
+									stat2Title="positive"
+									stat2Val={site.sentiment}
+								/>
+							))}
+						</div>
+					</CollapsibleContent>
+				</Collapsible>
+			</CardContent>
+		</Card>
 	);
 }
 
