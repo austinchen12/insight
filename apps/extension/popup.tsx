@@ -24,38 +24,42 @@ const getCurrentTabUrl = async () => {
 
 const queryClient = new QueryClient();
 
-function IndexPopup() {
-	const [page, setPage] = useState<"summary" | "topics">("summary");
-	// const { data, isLoading, isError } = useQuery({
-	// 	queryKey: ["getArticle"],
-	// 	queryFn: async () => {
-	// 		const url = await getCurrentTabUrl();
-	// 		const { data, error } = await app.getGlobalData.get({
-	// 			$query: { url },
-	// 		});
-	// 		if (error) throw error;
-	// 		return data;
-	// 	},
-	// });
-
+function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<div className="font-fredoka h-[600px] w-[400px] flex flex-col">
 				<Header />
-				{/* {isLoading ? (
-					<div className="flex items-center justify-center">Loading...</div>
-				) : (
-					<div className="pb-16">
-						{page == "summary" ? (
-							<Summary data={data} />
-						) : (
-							<Topics data={data} />
-						)}
-					</div>
-				)} */}
-				<Footer page={page} onPageChange={setPage} />
+				{children}
 			</div>
 		</QueryClientProvider>
+	);
+}
+
+function IndexPopup() {
+	const [page, setPage] = useState<"summary" | "topics">("summary");
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ["getArticle"],
+		queryFn: async () => {
+			const url = await getCurrentTabUrl();
+			const { data, error } = await app.getGlobalData.get({
+				$query: { url },
+			});
+			if (error) throw error;
+			return data;
+		},
+	});
+
+	return (
+		<Layout>
+			{isLoading ? (
+				<div className="flex items-center justify-center">Loading...</div>
+			) : (
+				<div className="pb-16">
+					{page == "summary" ? <Summary data={data} /> : <Topics data={data} />}
+				</div>
+			)}
+			<Footer page={page} onPageChange={setPage} />
+		</Layout>
 	);
 }
 function Header() {
