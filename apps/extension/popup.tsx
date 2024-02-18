@@ -74,7 +74,7 @@ function IndexPopup() {
 			<Header />
 			{!!data && (
 				<div className="pb-16">
-					{page == "summary" ? <Summary data={data} /> : <Topics />}
+					{page == "summary" ? <Summary data={data} /> : <Topics data={data} />}
 				</div>
 			)}
 
