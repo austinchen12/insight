@@ -20,6 +20,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "./ui/card";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "./ui/collapsible";
 
 function Topics() {
 	const numArticles = 12;
@@ -144,34 +149,32 @@ function TopicCard({ topic }) {
 					stat2Val={topic.sentiment.others}
 				/>
 
-				{!showBreakdown ? (
-					<button
-						className="text-xs flex items-center hover:underline gap-1 mt-1 text-dark"
-						onClick={() => setShowBreakdown(true)}>
-						View Breakdown <FaAngleDown />
-					</button>
-				) : (
-					<button
-						className="text-xs flex items-center hover:underline gap-1 mt-1 text-dark"
-						onClick={() => setShowBreakdown(false)}>
-						Hide Breakdown <FaAngleUp />
-					</button>
-				)}
-
-				{showBreakdown && (
-					<div className="border-t border-dark mt-1 pt-1">
-						{topic.sites.map((site, idx) => (
-							<StatsRow
-								key={idx}
-								title={site.name}
-								stat1Title="biased"
-								stat1Val={site.bias}
-								stat2Title="positive"
-								stat2Val={site.sentiment}
-							/>
-						))}
-					</div>
-				)}
+				<Collapsible open={showBreakdown} onOpenChange={setShowBreakdown}>
+					<CollapsibleTrigger asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="text-xs hover:underline -ml-3"
+							onClick={() => setShowBreakdown(true)}>
+							{showBreakdown ? "Hide Breakdown" : "View Breakdown"}
+							{showBreakdown ? <FaAngleUp /> : <FaAngleDown />}
+						</Button>
+					</CollapsibleTrigger>
+					<CollapsibleContent>
+						<div className="border-t border-dark mt-1 pt-1">
+							{topic.sites.map((site, idx) => (
+								<StatsRow
+									key={idx}
+									title={site.name}
+									stat1Title="biased"
+									stat1Val={site.bias}
+									stat2Title="positive"
+									stat2Val={site.sentiment}
+								/>
+							))}
+						</div>
+					</CollapsibleContent>
+				</Collapsible>
 			</CardContent>
 		</Card>
 	);
