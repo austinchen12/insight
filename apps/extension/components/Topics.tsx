@@ -97,10 +97,10 @@ function Topics() {
 
 function TopicOverviewNote({ stat1, stat2, title }) {
 	return (
-		<Card className="flex flex-col items-center w-full">
-			<p className="mt-4 text-2xl mb-1 text-black">
+		<Card className="flex flex-col items-center w-full gap-2">
+			<p className="mt-4 text-2xl">
 				{stat1}
-				<span className="text-[#555]">
+				<span>
 					{" / "}
 					{stat2}
 				</span>
