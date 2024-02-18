@@ -1,8 +1,3 @@
-import {
-	QueryClient,
-	QueryClientProvider,
-	useQuery,
-} from "@tanstack/react-query";
 import logo from "data-base64:~assets/icon.png";
 import { useEffect, useState } from "react";
 import { FaList } from "react-icons/fa";
@@ -23,8 +18,6 @@ const getCurrentTabUrl = async () => {
 	if (!tab) return "";
 	return tab.url;
 };
-
-const queryClient = new QueryClient();
 
 function Layout({ children }: { children: React.ReactNode }) {
 	return (
