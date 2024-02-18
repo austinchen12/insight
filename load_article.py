@@ -1,13 +1,12 @@
-import argparse
 import json
 import uuid
 import requests
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
-from sentence_transformers import SentenceTransformer
 from sklearn.cluster import DBSCAN
 import numpy as np
+from utils import embed_text, fetch_article
 
 load_dotenv(override=True)
 
@@ -20,29 +19,16 @@ client = OpenAI(
     api_key = os.environ.get("OPENAI_API_KEY"),
 )
 
-model = SentenceTransformer('all-MiniLM-L6-v2')
 
-
-def fetch_article(url):
-    if url.isdigit():
-        # get the first article in the folder based on the index passed in
-        url = os.listdir('articles')[int(url)]
-
-    # Hacky way to get around paywalls
-    filename = 'articles/' + f"{url.replace('/', '_')}"
-    print('filename: ', filename)
-    try:
-        with open(filename, 'r') as f:
-            lines = f.read().split('\n')
-            title, article = lines[0].replace('TITLE: ', ''), '\n'.join(lines[1:])
-            return title, article
-    except FileNotFoundError:
-        print('Article not found.')
 
 def detect_bias(input):
     try:
         response = requests.post(BIAS_URL, headers=headers, json={
             "inputs": input,
+            "parameters": {
+                "truncation": 'only_first',
+                "max_length": 512,
+            },
             "options": {
                 "wait_for_model": True
             }
@@ -61,6 +47,9 @@ def detect_sentiment(input):
     try:
         response = requests.post(SENTIMENT_URL, headers=headers, json={
             "inputs": input,
+            "parameters": {
+                "truncation": 'only_first',
+            },
             "options": {
                 "wait_for_model": True
             }
@@ -76,9 +65,6 @@ def detect_sentiment(input):
         exit(1)
 
     return sentiment
-
-def embed_text(text):
-    return model.encode(text, normalize_embeddings=True).tolist()
 
 def post_article(article):
     try:
@@ -218,59 +204,67 @@ def search_vector(vector):
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('url', help='The article to load')
-    args = parser.parse_args()
+    folder = "Trump Election Fraud"
 
-    title, article = fetch_article(args.url)
-    article_bias = detect_bias(article[:2048])
-    article_sentiment = detect_sentiment(article[:512])
+    articles = []
+    for title in os.listdir(f'articles/{folder}'):
+            if title == '.DS_Store':
+                continue
+            article = fetch_article(f'articles/{folder}/{title}')
+            article_bias = detect_bias(article)
+            article_sentiment = detect_sentiment(article)
 
-    article_obj = {
-        "title": title,
-        "url": args.url,
-        "bias": article_bias,
-        "sentiment": str(article_sentiment),
-        "embedding": str(embed_text(article)),
-    }
-    article_obj = post_article(article_obj)
-    
-    response = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": """You are a politically neutral reader that want's to help other people identify potential biases in the media they ingest. 
-                You will be given articles that people have read and I want you to identify the key topics of this article. 
-                Topics should be sentences rather than a list of words. Response should be word for word from the original text and be formatted as a single string with topics separated by a new line character.
-                  Do not prefix your response with any special characters like a dash.
-                  Shoot for 3-5 topics, and only the most broad nad important ones.
-                  
-                  Your output type is a JSON LIST of strings of these chunks of original text, each one being a unique important topic.
-                  
-                  Example:{ topics:["topic 1", "topic 2", "topic 3", ]}""",
-            },
-            {
-                "role": "user",
-                "content": f"{article}",
+            article_obj = {
+                "title": article,
+                "url": f'articles/{folder}/{title}',
+                "bias": article_bias,
+                "sentiment": json.dumps(article_sentiment),
+                "embedding": json.dumps(embed_text(article)),
             }
-        ],
-        model="gpt-3.5-turbo-1106",
-        response_format={ "type": "json_object" }
-    )
+            article_obj = post_article(article_obj)
+            articles.append(article_obj)
+    
+    specific_results = {}
+    for article in articles:
+        print('title', article["title"])
+        specific_results[article["id"]] = []
+        response = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": """You are a politically neutral reader that want's to help other people identify potential biases in the media they ingest. 
+                    You will be given articles that people have read and I want you to identify the key topics of this article. 
+                    Topics should be sentences rather than a list of words. Response should be word for word from the original text and be formatted as a single string with topics separated by a new line character.
+                    Do not prefix your response with any special characters like a dash.
+                    Shoot for 3-5 topics, and only the most broad nad important ones.
+                    
+                    Your output type is a JSON LIST of strings of these chunks of original text, each one being a unique important topic.
+                    
+                    Example:{ topics:["topic 1", "topic 2", "topic 3", ]}""",
+                },
+                {
+                    "role": "user",
+                    "content": f"{article['title']}",
+                }
+            ],
+            model="gpt-3.5-turbo-1106",
+            response_format={ "type": "json_object" }
+        )
 
-    topics = response.choices[0].message.content
-    data_json = json.loads(topics)
+        topics = response.choices[0].message.content
+        data_json = json.loads(topics)
 
-    specific_points = []
-    for topic in data_json["topics"][:3]:
-        point = post_specific_point({
-            "article_id": article_obj["id"],
-            "original_excerpt": topic,
-            "bias": detect_bias(topic),
-            "sentiment": str(detect_sentiment(topic)),
-            "embedding": str(embed_text(topic)),
-        })
-        specific_points.append(point)
+        specific_points = []
+        for topic in data_json["topics"]:
+            point = post_specific_point({
+                "article_id": article["id"],
+                "original_excerpt": topic,
+                "bias": detect_bias(topic),
+                "sentiment": str(detect_sentiment(topic)),
+                "embedding": str(embed_text(topic)),
+            })
+            specific_points.append(point)
+            print('specific_point', specific_points)
 
     embeddings = []
     printed_texts = []
@@ -301,6 +295,7 @@ def main():
             "title_generated": cluster_summary,
             "embedding": str(embed_text(cluster_summary))
         })
+        print('superset_point', superset_point)
         superset_points[i] = superset_point
 
     for i, grouped_points in enumerate(grouped_points_by_cluster):
