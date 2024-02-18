@@ -25,9 +25,6 @@ export const articles = sqliteTable("articles", {
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
 
-export const selectArticlesSchema = createSelectSchema(articles, {
-	sentiment: sentimentSchema,
-});
 export type SelectArticle = InferSelectModel<typeof articles>;
 export const insertArticles = createInsertSchema(articles, {
 	sentiment: sentimentSchema,
@@ -47,9 +44,6 @@ export const specificPoints = sqliteTable("specific_points", {
 
 export type SelectSpecificPoint = InferSelectModel<typeof specificPoints>;
 
-export const selectSpecificPointsSchema = createSelectSchema(specificPoints, {
-	sentiment: sentimentSchema,
-});
 export const insertSpecificPoints = createInsertSchema(specificPoints, {
 	sentiment: sentimentSchema,
 });
@@ -63,5 +57,4 @@ export const supersetPoints = sqliteTable("superset_points", {
 });
 
 export type SelectSupersetPoint = InferSelectModel<typeof supersetPoints>;
-export const selectSupersetPointsSchema = createSelectSchema(supersetPoints);
 export const insertSupersetPointsSchema = createInsertSchema(supersetPoints);
