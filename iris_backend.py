@@ -1,5 +1,7 @@
+from utils import resolver
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine, text
+from utils import embed_text, fetch_article
 
 app = Flask(__name__)
 
@@ -29,32 +31,43 @@ def execute_sql():
             result = connection.execute(text(sql), params)
             connection.commit()
             if result.returns_rows:
-                return jsonify({'result': [list(row) for row in result.all()]})
+                return jsonify({'result': [{key: value for key, value in row.items()} for row in result.mappings()]})
             else:
                 return jsonify({'result': f'{result.rowcount} row(s) affected.'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/search', methods=['POST'])
-def search():
+@app.route('/find_similar_articles', methods=['POST'])
+def find_similar_articles():
     data = request.json
-    search_vector = data.get('search_vector')
+    url = data.get('url')
+    path = resolver[url] # "articles/Carlson Putin/Alexei Navalny’s death underlines the horrors of Tucker Carlson’s Putin interview..md" # need map from url to path
+    article = fetch_article(path)
 
+    search_vector = embed_text(article)
     sql = text("""
         SELECT *,
         VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) AS dot_product_result
-        FROM superset_points
-        WHERE VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) > 0.5
+        FROM articles
+        WHERE VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) > 0.75
         ORDER BY dot_product_result DESC
     """)
+    
 
     try:
         with engine.connect() as connection:
-            result = connection.execute(sql, {'search_vector': str(search_vector)}).fetchall()
-            return jsonify({'result': [list(row) for row in result]})
+            result = connection.execute(sql, {'search_vector': str(search_vector)})
+            article = None
+            relevantArticles = []
+            for row in result.mappings():
+                if row['url'] == path:
+                    article = dict(row)
+                else:
+                    relevantArticles.append(dict(row))
+            return jsonify({'article': article, 'relevantArticles': relevantArticles})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
