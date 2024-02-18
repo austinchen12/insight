@@ -40,13 +40,20 @@ function Summary() {
 		},
 	];
 
-	const sampleArticles = [
+	const sampleArticles: {
+		title: string;
+		site: string;
+		bias: string;
+		positive: string;
+		url: string;
+	}[] = [
 		{
 			title:
 				"Billions of dollars are flowing into grants. Do we think that they can solve our problems?",
 			site: "CNN",
 			bias: "64",
 			positive: "53",
+			url: "https://cnn.com",
 		},
 		{
 			title:
@@ -54,6 +61,7 @@ function Summary() {
 			site: "CNN",
 			bias: "64",
 			positive: "53",
+			url: "https://cnn.com",
 		},
 		{
 			title:
@@ -61,6 +69,7 @@ function Summary() {
 			site: "CNN",
 			bias: "64",
 			positive: "53",
+			url: "https://cnn.com",
 		},
 		{
 			title:
@@ -68,6 +77,7 @@ function Summary() {
 			site: "CNN",
 			bias: "64",
 			positive: "53",
+			url: "https://cnn.com",
 		},
 		{
 			title:
@@ -75,6 +85,7 @@ function Summary() {
 			site: "CNN",
 			bias: "64",
 			positive: "53",
+			url: "https://cnn.com",
 		},
 		{
 			title:
@@ -82,6 +93,7 @@ function Summary() {
 			site: "CNN",
 			bias: "64",
 			positive: "53",
+			url: "https://cnn.com",
 		},
 		{
 			title:
@@ -89,6 +101,7 @@ function Summary() {
 			site: "CNN",
 			bias: "64",
 			positive: "53",
+			url: "https://cnn.com",
 		},
 		{
 			title:
@@ -96,6 +109,7 @@ function Summary() {
 			site: "CNN",
 			bias: "64",
 			positive: "53",
+			url: "https://cnn.com",
 		},
 		{
 			title:
@@ -103,6 +117,7 @@ function Summary() {
 			site: "CNN",
 			bias: "64",
 			positive: "53",
+			url: "https://cnn.com",
 		},
 	];
 
@@ -120,7 +135,7 @@ function Summary() {
 
 			<div className="flex justify-between items-center mt-2">
 				{/* Bias */}
-				<div className="bg-content-box h-36 w-40 rounded-lg border border-dark-green flex flex-col items-center">
+				<div className="bg-content-box h-36 w-full rounded-lg border border-dark-green flex flex-col items-center mr-2">
 					<div className="flex items-center justify-center -mt-2">
 						<RadialBarChart
 							width={100}
@@ -148,7 +163,7 @@ function Summary() {
 				</div>
 
 				{/* Sentiment */}
-				<div className="bg-content-box h-36 w-40 rounded-lg border border-dark-green flex flex-col items-center">
+				<div className="bg-content-box h-36 w-full rounded-lg border border-dark-green flex flex-col items-center ml-2">
 					<div className="flex items-center justify-center -mt-2">
 						<RadialBarChart
 							width={100}
@@ -186,8 +201,14 @@ function Summary() {
 
 // TODO: format sentiment
 function ScannedArticle({ article }) {
+	const openArticle = () => {
+		window.open(article.url, "_blank"); // Open article URL in a new tab
+	};
+
 	return (
-		<div className="bg-content-box w-full hover:cursor-pointer px-2 py-1 rounded-lg border border-[#A0CA21] hover:opacity-80 mb-1">
+		<button
+			className="bg-content-box w-full hover:cursor-pointer px-2 py-1 rounded-lg border border-[#A0CA21] hover:opacity-80 mb-1"
+			onClick={openArticle}>
 			<h3 className="text-[#606060] text-sm">{article.title}</h3>
 			<div className="flex gap-3 text-[#8DB613] text-xs">
 				<p>
@@ -195,7 +216,7 @@ function ScannedArticle({ article }) {
 					positive
 				</p>
 			</div>
-		</div>
+		</button>
 	);
 }
 

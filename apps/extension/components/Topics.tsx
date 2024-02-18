@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BsFillXCircleFill } from "react-icons/bs";
-import { FaAngleDown, FaCheckCircle } from "react-icons/fa";
+import { FaAngleDown, FaAngleUp, FaCheckCircle } from "react-icons/fa";
 import { GoShare } from "react-icons/go";
 import { RadialBar, RadialBarChart } from "recharts";
 
@@ -22,6 +22,23 @@ function Topics() {
 			included: true,
 			bias: { this: 45, others: 64 },
 			sentiment: { this: 30, others: 65 },
+			sites: [
+				{
+					name: "WSJ",
+					bias: 20,
+					sentiment: 84,
+				},
+				{
+					name: "CNN",
+					bias: 80,
+					sentiment: 82,
+				},
+				{
+					name: "New York Times",
+					bias: 20,
+					sentiment: 32,
+				},
+			],
 		},
 	];
 
@@ -81,6 +98,8 @@ function TopicOverviewNote({ stat1, stat2, title }) {
 }
 
 function TopicCard({ topic }) {
+	const [showBreakdown, setShowBreakdown] = useState(false);
+
 	return (
 		<div
 			className={`w-full px-2 py-1 rounded-lg border border-[#A0CA21] mb-1 ${topic.included ? "bg-content-box" : "bg-[#F0FFC5]"}`}>
@@ -114,9 +133,34 @@ function TopicCard({ topic }) {
 				stat2Val={topic.sentiment.others}
 			/>
 
-			<button className="text-xs flex items-center hover:underline gap-1 mt-1 text-dark">
-				View Breakdown <FaAngleDown />
-			</button>
+			{!showBreakdown ? (
+				<button
+					className="text-xs flex items-center hover:underline gap-1 mt-1 text-dark"
+					onClick={() => setShowBreakdown(true)}>
+					View Breakdown <FaAngleDown />
+				</button>
+			) : (
+				<button
+					className="text-xs flex items-center hover:underline gap-1 mt-1 text-dark"
+					onClick={() => setShowBreakdown(false)}>
+					Hide Breakdown <FaAngleUp />
+				</button>
+			)}
+
+			{showBreakdown && (
+				<div className="border-t border-dark mt-1 pt-1">
+					{topic.sites.map((site, idx) => (
+						<StatsRow
+							key={idx}
+							title={site.name}
+							stat1Title="biased"
+							stat1Val={site.bias}
+							stat2Title="positive"
+							stat2Val={site.sentiment}
+						/>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }
@@ -125,7 +169,7 @@ function StatsRow({ title, stat1Title, stat1Val, stat2Title, stat2Val }) {
 	return (
 		<div className="flex justify-between items-end mb-2">
 			<p>{title}</p>
-			<div className="flex items-center justify-end gap-2">
+			<div className="flex items-center justify-end gap-4">
 				{/* Stat 1 */}
 				<div className="flex flex-col items-start text-pink w-[6rem]">
 					<p className=" text-xs">
