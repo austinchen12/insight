@@ -65,7 +65,12 @@ function Topics({ data }: { data: GlobalData }) {
 
 			{/* Topic cards */}
 			{data.supersetPoints.map((supersetPoint, idx) => (
-				<TopicCard data={data} supersetPoint={supersetPoint} key={idx} />
+				<TopicCard
+					data={data}
+					supersetPoint={supersetPoint}
+					thisArticlePoints={data.thisArticle.specificPoints}
+					key={idx}
+				/>
 			))}
 		</div>
 	);
@@ -89,22 +94,18 @@ function TopicOverviewNote({ stat1, stat2, title }) {
 function TopicCard({
 	data,
 	supersetPoint,
+	thisArticlePoints,
 }: {
 	data: GlobalData;
 	supersetPoint: SelectSupersetPoint;
+	thisArticlePoints: SelectSpecificPoint[];
 }) {
 	const [showBreakdown, setShowBreakdown] = useState(false);
 
-	let included = false;
+	let isThisSupersetPointInArticleSpecificPoints = thisArticlePoints.some(
+		(point) => point.superset_point_id == supersetPoint.id
+	);
 	let connectedPoint: SelectSpecificPoint | null = null;
-	for (const specificPoint of data.thisArticle.specificPoints) {
-		if (specificPoint.superset_point_id == supersetPoint.id) {
-			included = true;
-			connectedPoint = specificPoint;
-			break;
-		}
-	}
-
 	const connectedRelatedPoints: SelectSpecificPoint[] = [];
 	for (const relevantArticle of data.relevantArticles) {
 		const connectedPoints = relevantArticle.specificPoints.filter(
@@ -133,7 +134,7 @@ function TopicCard({
 					{supersetPoint.title_generated}
 				</CardTitle>
 				<CardDescription>
-					{included ? (
+					{isThisSupersetPointInArticleSpecificPoints ? (
 						<div className="flex gap-1 items-center text-primary/75">
 							<FaCheckCircle className="text-primary/75" />
 							<p>This article includes this topic</p>
