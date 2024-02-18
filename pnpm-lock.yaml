@@ -48,18 +48,21 @@ importers:
 
   apps/extension:
     dependencies:
+      '@elysiajs/eden':
+        specifier: ^0.8.1
+        version: 0.8.1(elysia@0.8.17)
       '@radix-ui/react-accordion':
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
-      '@radix-ui/react-collapsible':
-        specifier: ^1.0.3
-        version: 1.0.3(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-progress':
         specifier: ^1.0.3
         version: 1.0.3(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-slot':
         specifier: ^1.0.2
         version: 1.0.2(@types/react@18.2.48)(react@18.2.0)
+      '@repo/backend':
+        specifier: workspace:*
+        version: link:../backend
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -70,13 +73,13 @@ importers:
         specifier: ^0.331.0
         version: 0.331.0(react@18.2.0)
       plasmo:
-        specifier: 0.84.2
+        specifier: ^0.84.2
         version: 0.84.2(postcss@8.4.35)(react-dom@18.2.0)(react@18.2.0)
       react:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0
       react-dom:
-        specifier: 18.2.0
+        specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       react-icons:
         specifier: ^5.0.1
@@ -92,31 +95,31 @@ importers:
         version: 1.0.7(tailwindcss@3.4.1)
     devDependencies:
       '@ianvs/prettier-plugin-sort-imports':
-        specifier: 4.1.1
-        version: 4.1.1(prettier@3.2.4)
+        specifier: ^4.1.1
+        version: 4.1.1(prettier@3.2.5)
       '@types/chrome':
-        specifier: 0.0.258
+        specifier: ^0.0.258
         version: 0.0.258
       '@types/node':
-        specifier: 20.11.5
+        specifier: ^20.11.5
         version: 20.11.5
       '@types/react':
-        specifier: 18.2.48
+        specifier: ^18.2.48
         version: 18.2.48
       '@types/react-dom':
-        specifier: 18.2.18
+        specifier: ^18.2.18
         version: 18.2.18
       postcss:
         specifier: ^8.4.35
         version: 8.4.35
       prettier:
-        specifier: 3.2.4
-        version: 3.2.4
+        specifier: ^3.2.4
+        version: 3.2.5
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.1
       typescript:
-        specifier: 5.3.3
+        specifier: ^5.3.3
         version: 5.3.3
 
 packages:
@@ -314,6 +317,19 @@ packages:
     dependencies:
       superjson: 2.2.1
     dev: true
+
+  /@elysiajs/eden@0.8.1(elysia@0.8.17):
+    resolution: {integrity: sha512-YzvcIANyzdxWqaXBYjVN/Y9hqaIDQwF3jc7rUMqVLVo+zOd3eTn8zruNEWcumA6n+rJujqqMYanrOD3pUolOtg==}
+    peerDependencies:
+      '@sinclair/typebox': '*'
+      elysia: '>= 0.8.0'
+    peerDependenciesMeta:
+      '@sinclair/typebox':
+        optional: true
+    dependencies:
+      elysia: 0.8.17(typescript@5.3.3)
+      superjson: 2.2.1
+    dev: false
 
   /@elysiajs/swagger@0.8.5(elysia@0.8.17):
     resolution: {integrity: sha512-8u4poCU62z8lgWuf4Edp84j6ZOdVLGMuFfbd85T/s7bEKUYHUdhbdd9lH5HFf8EKoJTmhpd+OyO4TxOF+vmOcA==}
@@ -729,7 +745,7 @@ packages:
       cross-spawn: 7.0.3
     dev: false
 
-  /@ianvs/prettier-plugin-sort-imports@4.1.1(prettier@3.2.4):
+  /@ianvs/prettier-plugin-sort-imports@4.1.1(prettier@3.2.5):
     resolution: {integrity: sha512-kJhXq63ngpTQ2dxgf5GasbPJWsJA3LgoOdd7WGhpUSzLgLgI4IsIzYkbJf9kmpOHe7Vdm/o3PcRA3jmizXUuAQ==}
     peerDependencies:
       '@vue/compiler-sfc': '>=3.0.0'
@@ -743,7 +759,7 @@ packages:
       '@babel/parser': 7.23.9
       '@babel/traverse': 7.23.9
       '@babel/types': 7.23.9
-      prettier: 3.2.4
+      prettier: 3.2.5
       semver: 7.6.0
     transitivePeerDependencies:
       - supports-color
@@ -1242,7 +1258,7 @@ packages:
       json5: 2.2.3
       msgpackr: 1.10.1
       nullthrows: 1.1.1
-      semver: 7.5.4
+      semver: 7.6.0
     dev: false
 
   /@parcel/diagnostic@2.8.3:
@@ -1383,7 +1399,7 @@ packages:
       '@parcel/fs': 2.9.3(@parcel/core@2.9.3)
       '@parcel/utils': 2.9.3
       nullthrows: 1.1.1
-      semver: 7.5.4
+      semver: 7.6.0
     transitivePeerDependencies:
       - '@parcel/core'
     dev: false
@@ -1506,7 +1522,7 @@ packages:
       '@parcel/types': 2.9.3(@parcel/core@2.9.3)
       '@parcel/utils': 2.9.3
       '@parcel/workers': 2.9.3(@parcel/core@2.9.3)
-      semver: 7.5.4
+      semver: 7.6.0
     dev: false
 
   /@parcel/packager-css@2.9.3(@parcel/core@2.9.3):
@@ -3961,7 +3977,6 @@ packages:
     engines: {node: '>=12.13'}
     dependencies:
       is-what: 4.1.16
-    dev: true
 
   /cosmiconfig@7.1.0:
     resolution: {integrity: sha512-AdmX6xUzdNASswsFtmwSt7Vj8po9IuqXm0UXz7QKPuEUmPB4XyjGfaAr2PSuELMwkRMVH1EpIkX5bTZGRB3eCA==}
@@ -4419,6 +4434,28 @@ packages:
       fast-decode-uri-component: 1.0.1
       fast-querystring: 1.1.2
       memoirist: 0.1.10
+    dev: false
+
+  /elysia@0.8.17(typescript@5.3.3):
+    resolution: {integrity: sha512-hqKHKUxbvlDHnobudtna5nBoGiZ4oa0xdnhynLAJF3+6gTYHAcQ/8/IyxUx5Az5Uy0zTuNiv7m2bIFu7xeMiWg==}
+    peerDependencies:
+      '@sinclair/typebox': '>= 0.31.0'
+      openapi-types: '>= 12.0.0'
+      typescript: '>= 5.0.0'
+    peerDependenciesMeta:
+      '@sinclair/typebox':
+        optional: true
+      openapi-types:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      cookie: 0.6.0
+      eventemitter3: 5.0.1
+      fast-decode-uri-component: 1.0.1
+      fast-querystring: 1.1.2
+      memoirist: 0.1.10
+      typescript: 5.3.3
     dev: false
 
   /emoji-regex@8.0.0:
@@ -5207,7 +5244,6 @@ packages:
   /is-what@4.1.16:
     resolution: {integrity: sha512-ZhMwEosbFJkA0YhFnNDgTM4ZxDRsS6HqTo7qsZM08fehyRYIYa0yHu5R6mgo1n/8MgaPBXiPimPD77baVFYg+A==}
     engines: {node: '>=12.13'}
-    dev: true
 
   /isbinaryfile@4.0.10:
     resolution: {integrity: sha512-iHrqe5shvBUcFbmZq9zOQHBoeOhZJu6RQGrDpBgenUm/Am+F3JM2MgQj+rK3Z601fzrL5gLZWtAPH2OBaSVcyw==}
@@ -6015,7 +6051,7 @@ packages:
       got: 12.6.1
       registry-auth-token: 5.0.2
       registry-url: 6.0.1
-      semver: 7.5.4
+      semver: 7.6.0
     dev: false
 
   /parent-module@1.0.1:
@@ -6293,12 +6329,6 @@ packages:
       tar-fs: 2.1.1
       tunnel-agent: 0.6.0
     dev: false
-
-  /prettier@3.2.4:
-    resolution: {integrity: sha512-FWu1oLHKCrtpO1ypU6J0SbK2d9Ckwysq6bHj/uaCP26DxrPpppCLQRGVuqAxSTvhF00AcvDRyYrLNW7ocBhFFQ==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dev: true
 
   /prettier@3.2.5:
     resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
@@ -6645,7 +6675,7 @@ packages:
       detect-libc: 2.0.2
       node-addon-api: 6.1.0
       prebuild-install: 7.1.1
-      semver: 7.5.4
+      semver: 7.6.0
       simple-get: 4.0.1
       tar-fs: 3.0.5
       tunnel-agent: 0.6.0
@@ -6799,7 +6829,6 @@ packages:
     engines: {node: '>=16'}
     dependencies:
       copy-anything: 3.0.5
-    dev: true
 
   /supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
@@ -7162,7 +7191,6 @@ packages:
     resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: true
 
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
