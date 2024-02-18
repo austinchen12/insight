@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 import requests
 from sentence_transformers import SentenceTransformer
-import hdbscan
+from sklearn.cluster import DBSCAN
 import numpy as np
 import time
 
@@ -39,7 +39,9 @@ def detect_bias(input):
         bias = responseJson[0][0]['score']
     except Exception as e:
         print('BIAS ERROR: ', str(e))
-        exit(1)
+        print("Sleeping for 2.")
+        time.sleep(2)
+        return detect_bias(input)
 
     return bias
 
@@ -48,12 +50,22 @@ def detect_sentiment(input):
         response = requests.post(SENTIMENT_URL, headers=headers, json={
             "inputs": input
         })
+
+        if response is None:
+            print("SLEEPING FOR 10...")
+            time.sleep(10)
+            # Call it again
+            return detect_sentiment(input)
+
         sentiment = {}
         for obj in response.json()[0]:
             sentiment[obj['label']] = obj['score']
     except Exception as e:
         print('SENTIMENT ERROR: ', str(e))
-        exit(1)
+        print("Sleeping for 2.")
+        time.sleep(2)
+        return detect_sentiment(input)
+
 
     return sentiment
 
@@ -124,9 +136,13 @@ def get_specific_points(file_contents):
 
 
 def get_clusters(embeddings):
-  clusterer = hdbscan.HDBSCAN()
-  clusterer.fit(embeddings)
+  # clusterer = hdbscan.HDBSCAN(alpha=1000.0, cluster_selection_epsilon=0.7)
+  # clusterer.fit(embeddings)
+  clusterer = DBSCAN(eps=0.999, min_samples=1, metric='euclidean')
+  cluster_labels = clusterer.fit_predict(embeddings)
   cluster_labels = clusterer.labels_
+
+  print("OLD cluster labels", cluster_labels)
   
   # Points that are not clustered with anything else are returned as -1, so we need to make them their own label instead
   max_label = max(cluster_labels)
@@ -153,7 +169,7 @@ def get_cluster_summary(texts):
             {
                 "role": "user",
                 "content": f"""Summarize all of the following strings (which should be related to each other) into one 5-10 word sentence. Only return the string and no other text at all.
-                Strings: {"-BREAK BETWEEN STRINGS-".join(texts)}""",
+                Strings: {"-BREAK BETWEEN STRINGS-".join(texts)[:1000]}""",
             }
         ],
         model="gpt-3.5-turbo-1106",
@@ -166,7 +182,8 @@ def get_cluster_summary(texts):
 def main():
     
     # Read data
-    directories_to_search = ['articles/Trump Election Fraud']  
+    # directories_to_search = ['articles/Trump Election Fraud']  
+    directories_to_search = ['articles/Sam Altman 7 Trillion'] 
     file_contents = []
     
     for directory in directories_to_search:
@@ -183,8 +200,14 @@ def main():
 
     # Cluster the embeddings
     embeddings = []
+    printed_texts = []
     for specific_point in specific_points:
         embeddings.append(specific_point["embedding"])
+        printed_texts.append(specific_point["original_excerpt"])
+
+
+    print("PRINTED_TEXTS", printed_texts)
+
     
     cluster_labels, num_clusters = get_clusters(embeddings)
 
@@ -208,6 +231,10 @@ def main():
         cluster_summaries.append(cluster_summary)
 
     print("cluster_summaries", cluster_summaries)
+
+
+
+
 
     # Push cluster summaries to the database
     
