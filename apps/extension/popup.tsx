@@ -12,9 +12,11 @@ import "~style.css";
 function IndexPopup() {
 	const [page, setPage] = useState<"summary" | "topics">("summary");
 	return (
-		<div className="font-fredoka pb-32 h-[600px] w-[400px] flex flex-col justify-between">
+		<div className="font-fredoka h-[600px] w-[400px] flex flex-col justify-between">
 			<Header />
-			{page == "summary" ? <Summary /> : <Topics />}
+			<div className="h-full pb-16">
+				{page == "summary" ? <Summary /> : <Topics />}
+			</div>
 			<Footer page={page} onPageChange={setPage} />
 		</div>
 	);
