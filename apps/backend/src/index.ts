@@ -31,27 +31,36 @@ const router = t.router({
 		.query(({ input: { url } }) => {
 			// ...
 		}),
-	insertArticles: t.procedure
-		.input(insertArticles)
-		.mutation(async ({ input }) => {
-			await db.insert(articles).values(input);
-		}),
+	insertArticles: t.procedure.input(insertArticles).mutation(({ input }) => {
+		return execute({
+			sql: "INSERT INTO articles (title, url, bias, sentiment, embedding) VALUES (:title, :url, :bias, :sentiment, :embedding)",
+			params: input,
+		});
+	}),
 	insertSpecificPoints: t.procedure
 		.input(insertSpecificPoints)
 		.mutation(async ({ input }) => {
-			await db.insert(specificPoints).values(input);
+			return execute({
+				sql: "INSERT INTO specific_points (article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:article_id, :original_excerpt, :embedding, :bias, :sentiment, :superset_point_id)",
+				params: input,
+			});
+			// await db.insert(specificPoints).values(input);
 		}),
 	updateSpecificPoints: t.procedure
 		.input(insertSpecificPoints)
 		.mutation(async ({ input }) => {
-			await db.update(specificPoints).set({
-				superset_point_id: input.superset_point_id,
-			});
+			// await db.update(specificPoints).set({
+			// 	superset_point_id: input.superset_point_id,
+			// });
 		}),
 	insertSupersetPoints: t.procedure
 		.input(insertSupersetPoints)
 		.mutation(async ({ input }) => {
-			await db.insert(supersetPoints).values(input);
+			return execute({
+				sql: "INSERT INTO superset_points (title_generated, embedding) VALUES (:title_generated, :embedding)",
+				params: input,
+			});
+			// await db.insert(supersetPoints).values(input);
 		}),
 });
 
