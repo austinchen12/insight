@@ -202,6 +202,20 @@ def get_cluster_summary(texts):
     summary = response.choices[0].message.content
     return summary
 
+def search_vector(vector):
+    try:
+        payload = {
+            'search_vector': vector,
+        }
+        response = requests.post('http://127.0.0.1:5000/search', json=payload)
+        if response.status_code != 200:
+            print(f'SEARCH {response.status_code}: ', response.json())
+            exit(1)
+        return response.json()
+    except Exception as e:
+        print('SEARCH ERROR: ', str(e))
+        exit(1)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -293,6 +307,10 @@ def main():
         for point in grouped_points:
             update_with_superset_point(point['id'], superset_points[i]['id'])
 
+    for specific_point in specific_points:
+        print(specific_point['original_excerpt'])
+        print(search_vector(json.loads(specific_point['embedding'])))
+        print()
 
 if __name__ == '__main__':
     main()
