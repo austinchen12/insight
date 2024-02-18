@@ -10,14 +10,15 @@
 		"package": "plasmo package"
 	},
 	"dependencies": {
+		"@elysiajs/eden": "^0.8.1",
 		"@radix-ui/react-accordion": "^1.1.2",
+		"@radix-ui/react-collapsible": "^1.0.3",
 		"@radix-ui/react-progress": "^1.0.3",
 		"@radix-ui/react-slot": "^1.0.2",
+		"@repo/backend": "workspace:*",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.0",
 		"lucide-react": "^0.331.0",
-		"@elysiajs/eden": "^0.8.1",
-		"@repo/backend": "workspace:*",
 		"plasmo": "^0.84.2",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
