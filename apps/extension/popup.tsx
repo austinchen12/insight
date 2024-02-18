@@ -3,10 +3,12 @@ import { useState } from "react";
 import { FaList } from "react-icons/fa";
 import { MdOutlineLibraryBooks } from "react-icons/md";
 
-import "~style.css";
-
 import Summary from "~components/Summary";
 import Topics from "~components/Topics";
+import { Button } from "~components/ui/button";
+import { cn } from "~lib/utils";
+
+import "~style.css";
 
 function IndexPopup() {
 	const [page, setPage] = useState<"summary" | "topics">("summary");
@@ -38,19 +40,13 @@ function Footer({
 	onPageChange: (page: "summary" | "topics") => void;
 }) {
 	return (
-		<div
-			className="h-[3rem] flex justify-center gap-4 items-center px-4 border-t border-white "
-			style={{ fontWeight: 600 }}>
-			<button
-				onClick={() => onPageChange("summary")}
-				className={page == "summary" && "border-b-2 border-dark-green "}>
-				<MdOutlineLibraryBooks className={`h-8 w-8 `} />
-			</button>
-			<button
-				onClick={() => onPageChange("topics")}
-				className={page == "topics" && "border-b-2 border-dark-green "}>
-				<FaList className={`h-6 w-6 `} />
-			</button>
+		<div className="h-8 w-full bg-background flex justify-between items-center px-4 border-t fixed bottom-0">
+			<Button onClick={() => onPageChange("summary")} className={cn("w-full")}>
+				<MdOutlineLibraryBooks className="h-4 w-4" />
+			</Button>
+			<Button onClick={() => onPageChange("topics")} className={cn("w-full")}>
+				<FaList className="h-4 w-4" />
+			</Button>
 		</div>
 	);
 }
