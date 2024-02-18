@@ -128,7 +128,7 @@ function Summary() {
 					Summary
 				</h2>
 
-				<Button className="py-2 text-sm bg-dark-green">
+				<Button className="py-2">
 					Share <GoShare className="ml-2 h-4 w-4" />
 				</Button>
 			</div>
