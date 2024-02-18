@@ -2,7 +2,8 @@ import { GoShare } from "react-icons/go";
 import { RadialBar, RadialBarChart } from "recharts";
 
 import { Button } from "~/components/ui/button";
-import { urlToSiteAbbreviation } from "~lib/utils";
+
+// import { urlToSiteAbbreviation } from "~lib/utils";
 
 import type { GlobalData } from "../../backend/src";
 import type { SelectArticle } from "../../backend/src/db/schema";
@@ -228,21 +229,23 @@ function Summary({ data }: { data: GlobalData }) {
 
 // TODO: format sentiment
 function ScannedArticle({ article }: { article: SelectArticle }) {
-	const openArticle = () => {
-		window.open(article.url, "_blank");
-	};
+	// const openArticle = () => {
+	// 	window.open(article.url, "_blank");
+	// };
 
-	const siteAppreviation = urlToSiteAbbreviation(article.url);
+	// const siteAppreviation = urlToSiteAbbreviation(article.url);
 
 	return (
 		<Card
 			className="hover:cursor-pointer w-full hover:opacity-80"
-			onClick={openArticle}>
+			// onClick={openArticle}
+		>
 			<CardHeader>
 				<CardTitle className="text-sm">{article.title}</CardTitle>
 				<CardDescription className="text-xs text-primary">
-					{siteAppreviation} &#183; {article.bias * 100}% bias &#183;{" "}
-					{article.sentiment.POS * 100}% positive
+					{/* {siteAppreviation} &#183; */}
+					{article.bias * 100}% bias &#183; {article.sentiment.POS * 100}%
+					positive
 				</CardDescription>
 			</CardHeader>
 		</Card>
