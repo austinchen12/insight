@@ -1,6 +1,10 @@
-import axios from "axios";
+import {
+	QueryClient,
+	QueryClientProvider,
+	useQuery,
+} from "@tanstack/react-query";
 import logo from "data-base64:~assets/icon.png";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaList } from "react-icons/fa";
 import { MdOutlineLibraryBooks } from "react-icons/md";
 
@@ -10,90 +14,48 @@ import { Button } from "~components/ui/button";
 
 import "~style.css";
 
-export type Sentiment = { NEG: number; NEU: number; POS: number };
-export type Bias = { biased: number; "non-biased": number };
+import { app } from "~lib/eden";
 
-export type Article = {
-	id: string;
-	title: string;
-	url: string;
-	bias: number;
-	sentiment: Sentiment;
-	embedding: number[];
-	specificPoints: SpecificPoint[];
+const getCurrentTabUrl = async () => {
+	const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+	if (!tab) return "";
+	return tab.url;
 };
 
-export type SpecificPoint = {
-	id: string;
-	article_id: string;
-	original_excerpt: string;
-	embedding: number[];
-	bias: Bias;
-	sentiment: Sentiment;
-	superset_point_id: string;
-};
-
-export type SupersetPoint = {
-	id: string;
-	title_generated: string;
-};
-
-export type GlobalData = {
-	thisArticle: Article;
-	relevantArticles: Article[];
-	supersetPoints: SupersetPoint[];
-};
+const queryClient = new QueryClient();
 
 function IndexPopup() {
 	const [page, setPage] = useState<"summary" | "topics">("summary");
-	const [data, setData] = useState<GlobalData | undefined>(undefined);
-	const [url, setUrl] = useState("");
-
-	useEffect(() => {
-		// Get current location
-		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-			if (tabs.length > 0) {
-				const currentTab = tabs[0];
-				setUrl(currentTab.url);
-			} else {
-				setUrl("");
-			}
-		});
-
-		async function loadData() {
-			setData(undefined);
-
-			// TODO: grab data
-
-			try {
-				const returnedData: GlobalData = await axios.get(
-					`...?url=${encodeURIComponent(url)}`
-				);
-
-				setData(returnedData);
-			} catch (e) {
-				console.error(e);
-				setData(undefined);
-			}
-		}
-
-		if (url) loadData();
-	}, [url]);
+	// const { data, isLoading, isError } = useQuery({
+	// 	queryKey: ["getArticle"],
+	// 	queryFn: async () => {
+	// 		const url = await getCurrentTabUrl();
+	// 		const { data, error } = await app.getGlobalData.get({
+	// 			$query: { url },
+	// 		});
+	// 		if (error) throw error;
+	// 		return data;
+	// 	},
+	// });
 
 	return (
-		<div className="font-fredoka h-[600px] w-[400px] flex flex-col">
-			<Header />
-			{!!data && (
-				<div className="pb-16">
-					{page == "summary" ? <Summary data={data} /> : <Topics data={data} />}
-				</div>
-			)}
-
-			{!data && (
-				<div className="flex items-center justify-center">Loading...</div>
-			)}
-			<Footer page={page} onPageChange={setPage} />
-		</div>
+		<QueryClientProvider client={queryClient}>
+			<div className="font-fredoka h-[600px] w-[400px] flex flex-col">
+				<Header />
+				{/* {isLoading ? (
+					<div className="flex items-center justify-center">Loading...</div>
+				) : (
+					<div className="pb-16">
+						{page == "summary" ? (
+							<Summary data={data} />
+						) : (
+							<Topics data={data} />
+						)}
+					</div>
+				)} */}
+				<Footer page={page} onPageChange={setPage} />
+			</div>
+		</QueryClientProvider>
 	);
 }
 function Header() {
