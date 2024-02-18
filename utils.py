@@ -69,3 +69,5 @@ resolver = {
     "https://www.nytimes.com/interactive/2024/01/02/us/politics/trump-ballot-removal-map.html": "articles/Trump Election Fraud/Tracking State Efforts to Remove Trump From the 2024 Ballot - The New York Times.md",
     "https://www.reuters.com/world/us/trump-address-supporters-after-3549-million-fraud-ruling-2024-02-17/": "articles/Trump Election Fraud/Trump tells supporters his $355 million fraud fine is election interference  Reuters.md",
 }
+
+reverse_resolver = { v: k for k, v in resolver.items() }

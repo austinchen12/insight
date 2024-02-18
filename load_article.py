@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 from sklearn.cluster import DBSCAN
 import numpy as np
-from utils import embed_text, fetch_article
+from utils import embed_text, fetch_article, reverse_resolver
 
 load_dotenv(override=True)
 
@@ -73,7 +73,7 @@ def post_article(article):
             'sql': "INSERT INTO articles (id, title, url, bias, sentiment, embedding) VALUES (:id, :title, :url, :bias, :sentiment, TO_VECTOR(:embedding))",
             'params': article
         }
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
+        response = requests.post('http://127.0.0.1:5001/execute_sql', json=payload)
         if response.status_code != 200:
             print(f'ARTICLE {response.status_code}: ', response.json())
             exit(1)
@@ -89,7 +89,7 @@ def post_specific_point(point):
             "sql": "INSERT INTO specific_points (id, article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:id, :article_id, :original_excerpt, TO_VECTOR(:embedding), :bias, :sentiment, :superset_point_id)",
             "params": point
         }
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
+        response = requests.post('http://127.0.0.1:5001/execute_sql', json=payload)
         if response.status_code != 200:
             print(f'SPECIFIC {response.status_code}: ', response.json())
             exit(1)
@@ -107,7 +107,7 @@ def update_with_superset_point(specific_point_id, superset_point_id):
                 "superset_point_id": superset_point_id,
             }
         }
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
+        response = requests.post('http://127.0.0.1:5001/execute_sql', json=payload)
         if response.status_code != 200:
             print(f'UPDATE {response.status_code}: ', response.json())
             exit(1)
@@ -123,7 +123,7 @@ def post_superset_point(point):
             "sql": "INSERT INTO superset_points (id, title_generated, embedding) VALUES (:id, :title_generated, TO_VECTOR(:embedding))",
             "params": point
         }
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
+        response = requests.post('http://127.0.0.1:5001/execute_sql', json=payload)
         if response.status_code != 200:
             print(f'SUPERSET {response.status_code}: ', response.json())
             exit(1)
@@ -150,7 +150,7 @@ def read_markdown_file(file_path):
         print("Error", file_path)
 
 def get_clusters(embeddings):
-    clusterer = DBSCAN(eps=0.999, min_samples=1, metric='euclidean')
+    clusterer = DBSCAN(eps=0.6, min_samples=1, metric='euclidean')
     cluster_labels = clusterer.fit_predict(embeddings)
     cluster_labels = clusterer.labels_
 
@@ -193,7 +193,7 @@ def search_vector(vector):
         payload = {
             'search_vector': vector,
         }
-        response = requests.post('http://127.0.0.1:5000/search', json=payload)
+        response = requests.post('http://127.0.0.1:5001/search', json=payload)
         if response.status_code != 200:
             print(f'SEARCH {response.status_code}: ', response.json())
             exit(1)
@@ -204,7 +204,7 @@ def search_vector(vector):
 
 
 def main():
-    folder = "Trump Election Fraud"
+    folder = "George Santos Lawsuit"
 
     articles = []
     for title in os.listdir(f'articles/{folder}'):
@@ -215,8 +215,8 @@ def main():
             article_sentiment = detect_sentiment(article)
 
             article_obj = {
-                "title": article,
-                "url": f'articles/{folder}/{title}',
+                "title": title,
+                "url": reverse_resolver[f'articles/{folder}/{title}'],
                 "bias": article_bias,
                 "sentiment": json.dumps(article_sentiment),
                 "embedding": json.dumps(embed_text(article)),
@@ -301,11 +301,6 @@ def main():
     for i, grouped_points in enumerate(grouped_points_by_cluster):
         for point in grouped_points:
             update_with_superset_point(point['id'], superset_points[i]['id'])
-
-    for specific_point in specific_points:
-        print(specific_point['original_excerpt'])
-        print(search_vector(json.loads(specific_point['embedding'])))
-        print()
 
 if __name__ == '__main__':
     main()

@@ -60,7 +60,7 @@ def find_similar_articles():
             article = None
             relevantArticles = []
             for row in result.mappings():
-                if row['url'] == path:
+                if row['url'] == url:
                     article = dict(row)
                 else:
                     relevantArticles.append(dict(row))
