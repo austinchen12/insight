@@ -215,7 +215,7 @@ function ScannedArticle({ article }) {
 		<Card
 			className="hover:cursor-pointer w-full hover:opacity-80"
 			onClick={openArticle}>
-			<CardHeader className="p-4">
+			<CardHeader>
 				<CardTitle className="text-sm">{article.title}</CardTitle>
 				<CardDescription className="text-xs">
 					{article.site} &#183; {article.bias}% bias &#183; {article.positive}%
