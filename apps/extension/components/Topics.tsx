@@ -28,11 +28,8 @@ function Topics({ data }: { data: GlobalData }) {
 	const numArticles = data.relevantArticles.length; // + 1?
 
 	// Should memoize this
-	const numTopics = data.supersetPoints.length;
-
-	let moreBiased = 0;
-
-	// TODO: num more and less biased than avg
+	const numCurrentArticleTopics = data.thisArticle.specificPoints.length;
+	const numSupersetTopics = data.supersetPoints.length;
 
 	return (
 		<div className="flex flex-col gap-2 px-3 py-2">
@@ -41,27 +38,27 @@ function Topics({ data }: { data: GlobalData }) {
 					Topics
 				</h2>
 				<p>
-					{numTopics} {numTopics > 1 ? "topics" : "topic"} across {numArticles}{" "}
-					articles
+					{numSupersetTopics} {numSupersetTopics > 1 ? "topics" : "topic"}{" "}
+					across {numArticles} articles
 				</p>
 			</div>
 
 			{/* Topics overview */}
 			<div className="flex gap-2">
 				<TopicOverviewNote
-					stat1={data.thisArticle.specificPoints.length}
-					stat2={numTopics}
+					stat1={numCurrentArticleTopics}
+					stat2={numSupersetTopics}
 					title="Topics included vs. total"
 				/>
 				<TopicOverviewNote
 					stat1={0}
-					stat2={numTopics}
+					stat2={numSupersetTopics}
 					title="More biased than the avg"
 				/>
 
 				<TopicOverviewNote
 					stat1={0}
-					stat2={numTopics}
+					stat2={numSupersetTopics}
 					title="More negative than the avg"
 				/>
 			</div>
@@ -110,7 +107,7 @@ function TopicCard({
 
 	const connectedRelatedPoints: SelectSpecificPoint[] = [];
 	for (const relevantArticle of data.relevantArticles) {
-		const connectedPoints = (relevantArticle.specificPoints ?? []).filter(
+		const connectedPoints = relevantArticle.specificPoints.filter(
 			(point) => point.superset_point_id == supersetPoint.id
 		);
 		connectedRelatedPoints.push(...connectedPoints);
