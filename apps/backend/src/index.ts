@@ -4,6 +4,7 @@ import {
 	insertArticles,
 	insertSpecificPoints,
 	insertSupersetPoints,
+	nanoid,
 } from "./db/schema";
 
 const EXECUTE_DATABASE_URL =
@@ -81,7 +82,12 @@ const app = new Elysia()
 			});
 			// await db.insert(articles).values(body);
 		},
-		{ body: insertArticles }
+		{
+			body: insertArticles,
+			transform({ body }) {
+				if (!body.id) body.id = nanoid();
+			},
+		}
 	)
 	.post(
 		"/specific_points",
@@ -92,7 +98,12 @@ const app = new Elysia()
 			});
 			// await db.insert(specificPoints).values(body);
 		},
-		{ body: insertSpecificPoints }
+		{
+			body: insertSpecificPoints,
+			transform({ body }) {
+				if (!body.id) body.id = nanoid();
+			},
+		}
 	)
 	.put(
 		"/specific_points",
@@ -116,7 +127,12 @@ const app = new Elysia()
 			});
 			// await db.insert(supersetPoints).values(body);
 		},
-		{ body: insertSupersetPoints }
+		{
+			body: insertSupersetPoints,
+			transform({ body }) {
+				if (!body.id) body.id = nanoid();
+			},
+		}
 	)
 	.listen(3000);
 

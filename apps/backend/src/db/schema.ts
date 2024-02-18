@@ -3,7 +3,7 @@ import { createInsertSchema } from "drizzle-typebox";
 import { Static, t } from "elysia";
 import { customAlphabet } from "nanoid";
 
-const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
+export const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
 export const sentimentSchema = t.Object({
 	NEG: t.Number(),
