@@ -124,7 +124,7 @@ function Summary() {
 	];
 
 	return (
-		<div className="px-3 py-2 ">
+		<div className="flex flex-col gap-2 px-3 py-2 ">
 			<div className="flex justify-between items-center">
 				<h2 className="text-lg text-dark" style={{ fontWeight: 400 }}>
 					Summary
@@ -135,7 +135,7 @@ function Summary() {
 				</Button>
 			</div>
 
-			<div className="flex justify-between items-center mt-2">
+			<div className="flex justify-between items-center gap-2">
 				{/* Bias */}
 				<Card className="w-full flex flex-col items-center">
 					<RadialBarChart
@@ -204,7 +204,9 @@ function ScannedArticle({ article }) {
 	};
 
 	return (
-		<Card className="hover:cursor-pointer w-full hover:opacity-80" onClick={openArticle}>
+		<Card
+			className="hover:cursor-pointer w-full hover:opacity-80"
+			onClick={openArticle}>
 			<h3 className="text-[#606060] text-sm">{article.title}</h3>
 			<div className="flex gap-3 text-[#8DB613] text-xs">
 				<p>
