@@ -5,8 +5,12 @@ import { FaAngleDown, FaAngleUp, FaCheckCircle } from "react-icons/fa";
 import { Button } from "~/components/ui/button";
 import { PinkProgress, PurpleProgress } from "~/components/ui/progress";
 import { urlToSiteAbbreviation } from "~lib/utils";
-import type { GlobalData, SpecificPoint, SupersetPoint } from "~popup";
 
+import type { GlobalData } from "../../backend/src";
+import type {
+	SelectSpecificPoint,
+	SelectSupersetPoint,
+} from "../../backend/src/db/schema";
 import {
 	Card,
 	CardContent,
@@ -90,12 +94,12 @@ function TopicCard({
 	supersetPoint,
 }: {
 	data: GlobalData;
-	supersetPoint: SupersetPoint;
+	supersetPoint: SelectSupersetPoint;
 }) {
 	const [showBreakdown, setShowBreakdown] = useState(false);
 
 	let included = false;
-	let connectedPoint: SpecificPoint | null = null;
+	let connectedPoint: SelectSpecificPoint | null = null;
 	for (const specificPoint of data.thisArticle.specificPoints) {
 		if (specificPoint.superset_point_id == supersetPoint.id) {
 			included = true;
@@ -104,7 +108,7 @@ function TopicCard({
 		}
 	}
 
-	const connectedRelatedPoints: SpecificPoint[] = [];
+	const connectedRelatedPoints: SelectSpecificPoint[] = [];
 	for (const relevantArticle of data.relevantArticles) {
 		const connectedPoints = relevantArticle.specificPoints.filter(
 			(point) => point.superset_point_id == supersetPoint.id

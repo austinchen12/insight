@@ -3,8 +3,9 @@ import { RadialBar, RadialBarChart } from "recharts";
 
 import { Button } from "~/components/ui/button";
 import { urlToSiteAbbreviation } from "~lib/utils";
-import type { Article, GlobalData } from "~popup";
 
+import type { GlobalData } from "../../backend/src";
+import type { SelectArticle } from "../../backend/src/db/schema";
 import {
 	Card,
 	CardContent,
@@ -226,7 +227,7 @@ function Summary({ data }: { data: GlobalData }) {
 }
 
 // TODO: format sentiment
-function ScannedArticle({ article }: { article: Article }) {
+function ScannedArticle({ article }: { article: SelectArticle }) {
 	const openArticle = () => {
 		window.open(article.url, "_blank");
 	};
