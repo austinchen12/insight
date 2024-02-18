@@ -46,6 +46,7 @@ function IndexPopup() {
 	const [page, setPage] = useState<"summary" | "topics">("summary");
 	const [data, setData] = useState<GlobalData>(EMPTY_GLOBAL_DATA);
 	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<Error | null>(null);
 
 	useEffect(() => {
 		(async () => {
@@ -53,7 +54,10 @@ function IndexPopup() {
 			const { data, error } = await app.getGlobalData.get({
 				$query: { url },
 			});
-			if (error) throw error;
+			if (error) {
+				setError(error);
+				throw error;
+			}
 			setData(data);
 			setIsLoading(false);
 		})();
@@ -61,7 +65,13 @@ function IndexPopup() {
 
 	return (
 		<Layout>
-			{!isLoading ? (
+			{error}
+			{isLoading}
+			{error ? (
+				<div className="flex items-center justify-center">
+					<p>Error: {error.message}</p>
+				</div>
+			) : isLoading ? (
 				<div className="flex items-center justify-center">Loading...</div>
 			) : (
 				<div className="pb-16">

@@ -52,33 +52,29 @@ async function execute<T extends TSchema>({
 	params: Record<string, unknown>;
 	schema: T;
 }) {
-	try {
-		const result = await fetch(EXECUTE_DATABASE_URL, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ sql, params }),
+	const result = await fetch(EXECUTE_DATABASE_URL, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ sql, params }),
+	})
+		.then((res) => {
+			if (!res.ok) throw new Error("Failed to execute SQL");
+			return res.json();
 		})
-			.then((res) => {
-				if (!res.ok) throw new Error("Failed to execute SQL");
-				return res.json();
-			})
-			.then((data) => data.result)
-			.then((rows) => {
-				return rows.map((row: any) =>
-					Object.entries(row).reduce((acc, [key, value]) => {
-						if (key === "sentiment") {
-							return { ...acc, [key]: JSON.parse(value.replaceAll("'", '"')) };
-						}
-						return { ...acc, [key]: value };
-					}, {})
-				);
-			});
-		return parse(schema, result);
-	} catch (error) {
-		console.error(error);
-	}
+		.then((data) => data.result)
+		.then((rows) => {
+			return rows.map((row: any) =>
+				Object.entries(row).reduce((acc, [key, value]) => {
+					if (key === "sentiment") {
+						return { ...acc, [key]: JSON.parse(value.replaceAll("'", '"')) };
+					}
+					return { ...acc, [key]: value };
+				}, {})
+			);
+		});
+	return parse(schema, result);
 }
 
 // const t = initTRPC.create();
