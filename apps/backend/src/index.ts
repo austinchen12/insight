@@ -1,20 +1,56 @@
 import { swagger } from "@elysiajs/swagger";
-import { Elysia, t } from "elysia";
+import { TypeCompiler } from "@sinclair/typebox/compiler";
+import { Elysia, TSchema, t } from "elysia";
 import {
+	SelectArticle,
+	SelectSpecificPoint,
+	SelectSupersetPoint,
 	insertArticles,
 	insertSpecificPoints,
-	insertSupersetPoints,
+	insertSupersetPointsSchema,
 	nanoid,
+	selectArticlesSchema,
+	selectSpecificPointsSchema,
+	selectSupersetPointsSchema,
 } from "./db/schema";
+
+export type SelectArticleJoinedSpecificPoints = SelectArticle & {
+	specificPoints: SelectSpecificPoint[];
+};
+
+export type GlobalData = {
+	thisArticle: SelectArticleJoinedSpecificPoints;
+	relevantArticles: SelectArticleJoinedSpecificPoints[];
+	supersetPoints: SelectSupersetPoint[];
+};
+
+export function parse<T extends TSchema>(schema: T, data: unknown) {
+	const C = TypeCompiler.Compile(schema);
+	const isValid = C.Check(data);
+	if (!isValid) throw [...C.Errors(data)];
+	return C.Decode(data);
+}
 
 const EXECUTE_DATABASE_URL =
 	"https://8e0d-68-65-175-49.ngrok-free.app/execute_sql";
 
-function execute(body: { sql: string; params: Record<string, unknown> }) {
-	return fetch(EXECUTE_DATABASE_URL, {
+async function execute<T extends TSchema>({
+	sql,
+	params,
+	schema,
+}: {
+	sql: string;
+	params: Record<string, unknown>;
+	schema: T;
+}) {
+	const result = await fetch(EXECUTE_DATABASE_URL, {
 		method: "POST",
-		body: JSON.stringify(body),
+		body: JSON.stringify({ sql, params }),
+	}).then((res) => {
+		if (!res.ok) throw new Error("Failed to execute SQL");
+		return res.json();
 	});
+	return parse(schema, result);
 }
 
 // const t = initTRPC.create();
@@ -65,9 +101,47 @@ function execute(body: { sql: string; params: Record<string, unknown> }) {
 const app = new Elysia()
 	.use(swagger())
 	.get(
-		"/articles/find-similar",
-		({ body }) => {
-			// ...
+		"/getGlobalData",
+		async ({ body: { url } }): Promise<GlobalData> => {
+			const thisArticle = await execute({
+				sql: "SELECT * FROM articles WHERE url = :url",
+				params: { url },
+				schema: selectArticlesSchema,
+			});
+			const thisArticleSpecificPoints = await execute({
+				sql: "SELECT * FROM specific_points WHERE article_id = :id",
+				params: { id: thisArticle.id },
+				schema: t.Array(selectSpecificPointsSchema),
+			});
+			const relevantArticles = await execute({
+				sql: "SELECT * FROM articles WHERE url != :url",
+				params: { url },
+				schema: t.Array(selectArticlesSchema),
+			});
+			const relevantArticlesWithSpecificPoints: SelectArticleJoinedSpecificPoints[] =
+				await Promise.all(
+					relevantArticles.map(async (article) => {
+						const specificPoints = await execute({
+							sql: "SELECT * FROM specific_points WHERE article_id = :id",
+							params: { id: article.id },
+							schema: t.Array(selectSpecificPointsSchema),
+						});
+						return { ...article, specificPoints };
+					})
+				);
+			const supersetPoints = await execute({
+				sql: "SELECT * FROM superset_points",
+				params: {},
+				schema: t.Array(selectSupersetPointsSchema),
+			});
+			return {
+				thisArticle: {
+					...thisArticle,
+					specificPoints: thisArticleSpecificPoints,
+				},
+				relevantArticles: relevantArticlesWithSpecificPoints,
+				supersetPoints,
+			};
 		},
 		{
 			body: t.Object({ url: t.String() }),
@@ -79,6 +153,7 @@ const app = new Elysia()
 			return execute({
 				sql: "INSERT INTO articles (id, title, url, bias, sentiment, embedding) VALUES (:id, :title, :url, :bias, :sentiment, :embedding)",
 				params: body,
+				schema: t.Unknown(),
 			});
 			// await db.insert(articles).values(body);
 		},
@@ -95,6 +170,7 @@ const app = new Elysia()
 			return execute({
 				sql: "INSERT INTO specific_points (id, article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:id, :article_id, :original_excerpt, :embedding, :bias, :sentiment, :superset_point_id)",
 				params: body,
+				schema: t.Unknown(),
 			});
 			// await db.insert(specificPoints).values(body);
 		},
@@ -111,6 +187,7 @@ const app = new Elysia()
 			return execute({
 				sql: "UPDATE specific_points SET superset_point_id = :superset_point_id",
 				params: body,
+				schema: t.Unknown(),
 			});
 			// await db.update(specificPoints).set({
 			// 	superset_point_id: body.superset_point_id,
@@ -124,11 +201,12 @@ const app = new Elysia()
 			return execute({
 				sql: "INSERT INTO superset_points (id, title_generated, embedding) VALUES (:id, :title_generated, :embedding)",
 				params: body,
+				schema: t.Unknown(),
 			});
 			// await db.insert(supersetPoints).values(body);
 		},
 		{
-			body: insertSupersetPoints,
+			body: insertSupersetPointsSchema,
 			transform({ body }) {
 				if (!body.id) body.id = nanoid();
 			},
