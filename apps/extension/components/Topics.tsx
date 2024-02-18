@@ -58,7 +58,7 @@ function Topics() {
 	return (
 		<div className="flex flex-col gap-2 px-3 py-2">
 			<div className="flex justify-between items-center">
-				<h2 className="text-lg text-dark mb-2" style={{ fontWeight: 400 }}>
+				<h2 className="scroll-m-20 text-2xl font-medium tracking-tight">
 					Topics
 				</h2>
 				<p>

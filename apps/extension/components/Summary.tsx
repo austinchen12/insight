@@ -132,7 +132,7 @@ function Summary() {
 	return (
 		<div className="flex flex-col gap-2 px-3 py-2 ">
 			<div className="flex justify-between items-center">
-				<h2 className="text-lg text-dark" style={{ fontWeight: 400 }}>
+				<h2 className="scroll-m-20 text-2xl font-medium tracking-tight">
 					Summary
 				</h2>
 
@@ -194,7 +194,7 @@ function Summary() {
 				</Card>
 			</div>
 
-			<h2 className="text-lg text-dark mt-2" style={{ fontWeight: 400 }}>
+			<h2 className="scroll-m-20 text-2xl font-medium tracking-tight">
 				Scanned Articles
 			</h2>
 
