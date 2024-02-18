@@ -2,6 +2,10 @@ import argparse
 import requests
 from openai import OpenAI
 import os
+from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
+
+load_dotenv(override=True)
 
 BIAS_URL = "https://api-inference.huggingface.co/models/d4data/bias-detection-model"
 SENTIMENT_URL = "https://api-inference.huggingface.co/models/finiteautomata/bertweet-base-sentiment-analysis"
@@ -11,6 +15,8 @@ headers = {"Authorization": f"Bearer {API_TOKEN}"}
 client = OpenAI(
     api_key = os.environ.get("OPENAI_API_KEY"),
 )
+
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 
 def fetch_article(url):
@@ -31,22 +37,33 @@ def fetch_article(url):
     
 
 def detect_bias(input):
-    response = requests.post(BIAS_URL, headers=headers, json={
-        "inputs": input
-    })
-    bias = response.json()[0][0]['score']
+    try:
+        response = requests.post(BIAS_URL, headers=headers, json={
+            "inputs": input
+        })
+        bias = response.json()[0][0]['score']
+    except Exception as e:
+        print('BIAS ERROR: ', e.message)
+        exit(1)
 
     return bias
 
 def detect_sentiment(input):
-    response = requests.post(SENTIMENT_URL, headers=headers, json={
-        "inputs": input
-    })
-    sentiment = {}
-    for obj in response.json()[0]:
-        sentiment[obj['label']] = obj['score']
+    try:
+        response = requests.post(SENTIMENT_URL, headers=headers, json={
+            "inputs": input
+        })
+        sentiment = {}
+        for obj in response.json()[0]:
+            sentiment[obj['label']] = obj['score']
+    except Exception as e:
+        print('SENTIMENT ERROR: ', e.message)
+        exit(1)
 
     return sentiment
+
+def embed_text(text):
+    return model.encode(text, normalize_embeddings=True).tolist()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -60,7 +77,8 @@ def main():
     article_obj = {
         "title": title,
         "bias": article_bias,
-        "sentiment": article_sentiment
+        "sentiment": article_sentiment,
+        "embeddings": embed_text(article)
     }
     print(article_obj)
     
@@ -85,7 +103,8 @@ def main():
         specific_points.append({
             "excerpt": topic,
             "bias": detect_bias(topic),
-            "sentiment": detect_sentiment(topic)
+            "sentiment": detect_sentiment(topic),
+            "embeddings": embed_text(topic)
         })
     print(specific_points)
 
