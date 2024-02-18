@@ -1,5 +1,8 @@
-import { Elysia, t } from "elysia";
 import { swagger } from "@elysiajs/swagger";
+import { trpc } from "@elysiajs/trpc";
+import { initTRPC } from "@trpc/server";
+import { Elysia } from "elysia";
+import { z } from "zod";
 import { db } from "./db";
 import {
 	articles,
@@ -10,47 +13,36 @@ import {
 	supersetPoints,
 } from "./db/schema";
 
-const app = new Elysia()
-	.use(swagger())
-	.get(
-		"/articles/find-similar",
-		({ body }) => {
+const t = initTRPC.create();
+
+const router = t.router({
+	findSimilarArticles: t.procedure
+		.input(z.object({ url: z.string() }))
+		.query(({ input: { url } }) => {
 			// ...
-		},
-		{
-			body: t.Object({ url: t.String() }),
-		}
-	)
-	.post(
-		"/articles",
-		async ({ body }) => {
-			await db.insert(articles).values(body);
-		},
-		{ body: insertArticles }
-	)
-	.post(
-		"/specific_points",
-		async ({ body }) => {
-			await db.insert(specificPoints).values(body);
-		},
-		{ body: insertSpecificPoints }
-	)
-	.put(
-		"/specific_points",
-		async ({ body }) => {
+		}),
+	insertArticles: t.procedure.input(insertArticles).query(async ({ input }) => {
+		await db.insert(articles).values(input);
+	}),
+	insertSpecificPoints: t.procedure
+		.input(insertSpecificPoints)
+		.query(async ({ input }) => {
+			await db.insert(specificPoints).values(input);
+		}),
+	updateSpecificPoints: t.procedure
+		.input(insertSpecificPoints)
+		.query(async ({ input }) => {
 			await db.update(specificPoints).set({
-				superset_point_id: body.superset_point_id,
+				superset_point_id: input.superset_point_id,
 			});
-		},
-		{ body: t.Pick(insertSpecificPoints, ["superset_point_id"]) }
-	)
-	.post(
-		"/superset_points",
-		async ({ body }) => {
-			await db.insert(supersetPoints).values(body);
-		},
-		{ body: insertSupersetPoints }
-	)
-	.listen(3000);
+		}),
+	insertSupersetPoints: t.procedure
+		.input(insertSupersetPoints)
+		.query(async ({ input }) => {
+			await db.insert(supersetPoints).values(input);
+		}),
+});
+
+const app = new Elysia().use(swagger()).use(trpc(router)).listen(3000);
 
 export type App = typeof app;

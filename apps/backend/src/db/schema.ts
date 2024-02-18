@@ -1,17 +1,17 @@
 import { real, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createInsertSchema } from "drizzle-typebox";
-import { Static, t } from "elysia";
+import { createInsertSchema } from "drizzle-zod";
 import { customAlphabet } from "nanoid";
+import { z } from "zod";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789");
 
-export const sentimentSchema = t.Object({
-	NEG: t.Number(),
-	NEU: t.Number(),
-	POS: t.Number(),
+export const sentimentSchema = z.object({
+	NEG: z.number(),
+	NEU: z.number(),
+	POS: z.number(),
 });
 
-export type Sentiment = Static<typeof sentimentSchema>;
+export type Sentiment = z.infer<typeof sentimentSchema>;
 
 export const articles = sqliteTable("articles", {
 	id: text("id")
