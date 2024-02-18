@@ -1,0 +1,13 @@
+     ![](https://pyxis.nymag.com/v1/imgs/12f/109/6caf2d7260134e8639684c251bf9b3331e-george-santos.rsquare.w330.jpg)
+
+Photo: Drew Angerer/Getty Images
+
+After [Jimmy Kimmel](https://www.vulture.com/article/oscars-2024-everything-we-know.html) purchased a series of cameos from [George Santos](https://www.vulture.com/article/george-santos-ziwe-interview.html) to use during a [_Jimmy Kimmel Live!_](https://www.vulture.com/article/katy-perry-leaving-american-idol-new-music.html) segment in December, the expelled-Congressman is now suing the late night host. In a complaint filed on Saturday, February 17, which also named ABC and Disney as defendants, Santos accused Kimmel of misusing the videos by acquiring them with fake names and broadcasting them on his show.
+
+The complaint, which was first reported by the [_New York Post_](https://nypost.com/2024/02/17/us-news/lyin-expelled-ex-rep-george-santos-makes-jimmy-kimmels-wishes-come-true-by-suing-host-over-misusing-cameo-clips/), claims that Kimmel violated Cameo’s terms of service, and accuses him of copyright infringement, fraud, breach of contract, and unjust enrichment. Santos, who’s on the other of a fraud lawsuit this time around, is seeking at least $750,000 in damages.
+
+Kimmel used the videos last December in a segment called “[Will Santos Say It?](https://www.youtube.com/watch?v=iyoRHDkJKlo)” in which he prompted the former-Congressman to deliver increasingly outrageous messages. These included having Santos congratulate people for eating six pounds of loose ground beef in under 30 minutes, cloning a schnauzer named Adolf, and passing a driving test despite being blind. After airing some of the clips, Kimmel joked about the prospect of Santos suing him, [saying](https://www.youtube.com/watch?v=5-4SUO4Rlik), “I showed some of them on the air on Thursday, and now he’s demanding $20,000 from me to be paid a commercial rate. Could you imagine if I get sued by George Santos for fraud? I mean how good would that be? It would be like a dream come true.”
+
+In a statement to the [_New York Post_](https://nypost.com/2024/02/17/us-news/lyin-expelled-ex-rep-george-santos-makes-jimmy-kimmels-wishes-come-true-by-suing-host-over-misusing-cameo-clips/), Santos said, “Jimmy, sorry that my Christmas gift to you came late, but here’s to making wishes come true. I hope you enjoy reading your lawsuit for fraud that you’ve been looking forward to.”
+
+## Sources
