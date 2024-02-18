@@ -116,9 +116,7 @@ function TopicCard({ topic }) {
 	return (
 		<Card className="w-full">
 			<CardHeader>
-				<CardTitle className="text-[#606060] text-sm mb-1">
-					{topic.title}
-				</CardTitle>
+				<CardTitle className="text-sm">{topic.title}</CardTitle>
 				<CardDescription>
 					{topic.included ? (
 						<div className="flex gap-1 items-center text-primary/75">
