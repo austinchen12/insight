@@ -12,7 +12,7 @@ function IndexPopup() {
 	const [page, setPage] = useState<"summary" | "topics">("summary");
 
 	return (
-		<div className="font-fredoka h-[600px] w-[350px] flex flex-col justify-between bg-bg ">
+		<div className="font-fredoka h-[600px] w-[400px] flex flex-col justify-between bg-bg ">
 			<div>
 				{/* Header */}
 				<div
