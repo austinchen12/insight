@@ -28,7 +28,11 @@ export type GlobalData = {
 export function parse<T extends TSchema>(schema: T, data: unknown) {
 	const C = TypeCompiler.Compile(schema);
 	const isValid = C.Check(data);
-	if (!isValid) throw [...C.Errors(data)];
+	if (!isValid) {
+		const errors = [...C.Errors(data)];
+		console.error(errors);
+		throw errors;
+	}
 	return C.Decode(data);
 }
 
@@ -135,7 +139,18 @@ const app = new Elysia()
 					},
 					body: JSON.stringify({ url }),
 				}
-			).then((response) => response.json());
+			)
+				.then((response) => response.json())
+				.then((data) => {
+					console.log("🚀 ~ data:", data);
+					return parse(
+						t.Object({
+							article: t.Nullable(selectArticlesSchema),
+							relevantArticles: t.Array(selectArticlesSchema),
+						}),
+						data
+					);
+				});
 			console.log("🚀 ~ relevantArticles2:", relevantArticles2);
 			const thisArticle = await execute({
 				sql: "SELECT * FROM articles WHERE url = :url",
