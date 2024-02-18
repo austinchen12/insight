@@ -11,8 +11,11 @@
 	"dependencies": {
 		"@elysiajs/cors": "^0.8.0",
 		"@elysiajs/swagger": "^0.8.5",
+		"@elysiajs/trpc": "^0.8.0",
+		"@elysiajs/websocket": "^0.2.8",
 		"@libsql/client": "^0.5.0",
 		"@sinclair/typebox": "^0.32.14",
+		"@trpc/server": "^10.45.1",
 		"drizzle-orm": "^0.29.3",
 		"drizzle-typebox": "^0.1.1",
 		"elysia": "latest",
