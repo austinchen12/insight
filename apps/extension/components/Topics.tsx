@@ -14,6 +14,8 @@ import { Button } from "~/components/ui/button";
 import { PinkProgress, PurpleProgress } from "~/components/ui/progress";
 
 function Topics() {
+	const numArticles = 12;
+
 	const sampleTopics = [
 		{
 			title: "Billions of dollars have been flowing into climate change",
@@ -29,34 +31,51 @@ function Topics() {
 				<h2 className="text-lg text-dark mb-2" style={{ fontWeight: 400 }}>
 					Topics
 				</h2>
-
-				{/* <Accordion type="single" collapsible className="w-full">
-					<AccordionItem value="item-1">
-						<AccordionTrigger>Is it accessible?</AccordionTrigger>
-						<AccordionContent>
-							Yes. It adheres to the WAI-ARIA design pattern.
-						</AccordionContent>
-					</AccordionItem>
-					<AccordionItem value="item-2">
-						<AccordionTrigger>Is it styled?</AccordionTrigger>
-						<AccordionContent>
-							Yes. It comes with default styles that matches the other
-							components&apos; aesthetic.
-						</AccordionContent>
-					</AccordionItem>
-					<AccordionItem value="item-3">
-						<AccordionTrigger>Is it animated?</AccordionTrigger>
-						<AccordionContent>
-							Yes. It&apos;s animated by default, but you can disable it if you
-							prefer.
-						</AccordionContent>
-					</AccordionItem>
-				</Accordion> */}
+				<p>
+					{sampleTopics.length} {sampleTopics.length > 1 ? "topics" : "topic"}{" "}
+					across {numArticles} articles
+				</p>
 			</div>
 
+			{/* Topics overview */}
+			<div className="flex gap-3">
+				<TopicOverviewNote
+					stat1={1}
+					stat2={sampleTopics.length}
+					title="Topics included vs. total"
+				/>
+				<TopicOverviewNote
+					stat1={0}
+					stat2={sampleTopics.length}
+					title="More biased than the avg"
+				/>
+
+				<TopicOverviewNote
+					stat1={0}
+					stat2={sampleTopics.length}
+					title="More negative than the avg"
+				/>
+			</div>
+
+			{/* Topic cards */}
 			{sampleTopics.map((topic, idx) => (
 				<TopicCard topic={topic} key={idx} />
 			))}
+		</div>
+	);
+}
+
+function TopicOverviewNote({ stat1, stat2, title }) {
+	return (
+		<div className="bg-content-box rounded-lg flex flex-col items-center w-full px-2 pb-2 mb-4">
+			<p className="mt-4 text-2xl mb-1 text-black">
+				{stat1}
+				<span className="text-[#555]">
+					{" / "}
+					{stat2}
+				</span>
+			</p>
+			<p className="text-center">{title}</p>
 		</div>
 	);
 }
@@ -78,6 +97,7 @@ function TopicCard({ topic }) {
 					<p>This article does not include this topic</p>
 				</div>
 			)}
+			<div className="h-2"></div>
 
 			<StatsRow
 				title="This article"
