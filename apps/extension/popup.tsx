@@ -6,7 +6,6 @@ import { MdOutlineLibraryBooks } from "react-icons/md";
 import Summary from "~components/Summary";
 import Topics from "~components/Topics";
 import { Button } from "~components/ui/button";
-import { cn } from "~lib/utils";
 
 import "~style.css";
 
