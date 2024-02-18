@@ -40,11 +40,17 @@ function Footer({
 	onPageChange: (page: "summary" | "topics") => void;
 }) {
 	return (
-		<div className="h-8 w-full bg-background flex justify-between items-center px-4 border-t fixed bottom-0">
-			<Button onClick={() => onPageChange("summary")} className={cn("w-full")}>
+		<div className="w-full bg-background flex justify-between items-center border-t fixed bottom-0">
+			<Button
+				className="w-full"
+				onClick={() => onPageChange("summary")}
+				variant={page === "summary" ? "default" : "ghost"}>
 				<MdOutlineLibraryBooks className="h-4 w-4" />
 			</Button>
-			<Button onClick={() => onPageChange("topics")} className={cn("w-full")}>
+			<Button
+				className="w-full"
+				onClick={() => onPageChange("topics")}
+				variant={page === "topics" ? "default" : "ghost"}>
 				<FaList className="h-4 w-4" />
 			</Button>
 		</div>
