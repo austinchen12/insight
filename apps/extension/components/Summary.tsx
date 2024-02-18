@@ -4,7 +4,13 @@ import { RadialBar, RadialBarChart } from "recharts";
 
 import { Button } from "~/components/ui/button";
 
-import { Card } from "./ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "./ui/card";
 
 function Summary() {
 	// Sample data
@@ -209,13 +215,13 @@ function ScannedArticle({ article }) {
 		<Card
 			className="hover:cursor-pointer w-full hover:opacity-80"
 			onClick={openArticle}>
-			<h3 className="text-[#606060] text-sm">{article.title}</h3>
-			<div className="flex gap-3 text-[#8DB613] text-xs">
-				<p>
+			<CardHeader className="p-4">
+				<CardTitle className="text-sm">{article.title}</CardTitle>
+				<CardDescription className="text-xs">
 					{article.site} &#183; {article.bias}% bias &#183; {article.positive}%
 					positive
-				</p>
-			</div>
+				</CardDescription>
+			</CardHeader>
 		</Card>
 	);
 }
