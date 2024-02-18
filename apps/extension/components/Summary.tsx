@@ -2,12 +2,6 @@ import { useState } from "react";
 import { GoShare } from "react-icons/go";
 import { RadialBar, RadialBarChart } from "recharts";
 
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
 
 function Summary() {
@@ -113,7 +107,7 @@ function Summary() {
 	];
 
 	return (
-		<div className="px-3 py-2">
+		<div className="px-3 py-2 ">
 			<div className="flex justify-between items-center">
 				<h2 className="text-lg text-dark" style={{ fontWeight: 400 }}>
 					Summary
@@ -186,29 +180,6 @@ function Summary() {
 			{sampleArticles.map((article, idx) => (
 				<ScannedArticle article={article} key={idx} />
 			))}
-
-			{/* <Accordion type="single" collapsible className="w-full">
-				<AccordionItem value="item-1">
-					<AccordionTrigger>Is it accessible?</AccordionTrigger>
-					<AccordionContent>
-						Yes. It adheres to the WAI-ARIA design pattern.
-					</AccordionContent>
-				</AccordionItem>
-				<AccordionItem value="item-2">
-					<AccordionTrigger>Is it styled?</AccordionTrigger>
-					<AccordionContent>
-						Yes. It comes with default styles that matches the other
-						components&apos; aesthetic.
-					</AccordionContent>
-				</AccordionItem>
-				<AccordionItem value="item-3">
-					<AccordionTrigger>Is it animated?</AccordionTrigger>
-					<AccordionContent>
-						Yes. It&apos;s animated by default, but you can disable it if you
-						prefer.
-					</AccordionContent>
-				</AccordionItem>
-			</Accordion> */}
 		</div>
 	);
 }
