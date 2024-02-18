@@ -5,6 +5,13 @@ module.exports = {
 	theme: {
 		colors: {
 			bg: "#EAFFAB",
+			pink: "#FF3B69",
+			"dark-green": "#159D69",
+			"content-box": "#C4EB20",
+			orange: "#FEA419",
+			purple: "#A059FF",
+			dark: "#0E1734",
+			blue: "#11DFFF",
 		},
 		container: {
 			center: true,
@@ -14,6 +21,10 @@ module.exports = {
 			},
 		},
 		extend: {
+			fontFamily: {
+				fredoka: ["Fredoka"],
+			},
+
 			colors: {
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",

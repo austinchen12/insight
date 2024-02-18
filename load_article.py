@@ -1,6 +1,8 @@
 import argparse
 import json
 import uuid
+import json
+import uuid
 import requests
 from openai import OpenAI
 import os
@@ -43,6 +45,9 @@ def detect_bias(input):
         response = requests.post(BIAS_URL, headers=headers, json={
             "inputs": input
         })
+        if response.status_code != 200:
+            print(f'BIAS {response.status_code}: ', response.json())
+            exit(1)
         bias = response.json()[0][0]['score']
     except Exception as e:
         print('BIAS ERROR: ', str(e))
@@ -55,6 +60,9 @@ def detect_sentiment(input):
         response = requests.post(SENTIMENT_URL, headers=headers, json={
             "inputs": input
         })
+        if response.status_code != 200:
+            print(f'SENTIMENT {response.status_code}: ', response.json())
+            exit(1)
         sentiment = {}
         for obj in response.json()[0]:
             sentiment[obj['label']] = obj['score']
@@ -66,52 +74,6 @@ def detect_sentiment(input):
 
 def embed_text(text):
     return model.encode(text, normalize_embeddings=True).tolist()
-
-
-def post_article(article):
-    try:
-        payload = {
-            'sql': "INSERT INTO articles (id, title, url, bias, sentiment, embedding) VALUES (:id, :title, :url, :bias, :sentiment, :embedding)",
-            'params': article
-        }
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
-        if response.status_code != 200:
-            print('ARTICLE ERROR 1', response.text)
-    except Exception as e:
-        print('ARTICLE ERROR: ', str(e))
-        exit(1)
-
-def post_specific_point(point):
-    try:
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=json.dumps({
-            "sql": "INSERT INTO specific_points (article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:article_id, :original_excerpt, :embedding, :bias, :sentiment, :superset_point_id)",
-            "params": {
-                "article_id": point['article_id'],
-                "original_excerpt": point['original_excerpt'],
-                "embedding": point['embeddings'],
-                "bias": point['bias'],
-                "sentiment": point['sentiment'],
-                "superset_point_id": ''
-            }
-        }))
-        print(response)
-    except Exception as e:
-        print('SPECIFIC ERROR: ', str(e))
-        exit(1)
-
-def post_superset_point(point):
-    try:
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=json.dumps({
-            "sql": "INSERT INTO superset_points (title_generated, embedding) VALUES (:title_generated, :embedding)",
-            "params": {
-                "title_generated": point['title_generated'],
-                "embedding": point['embeddings']
-            }
-        }))
-        print(response)
-    except Exception as e:
-        print('SUPERSET ERROR: ', e.message)
-        exit(1)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -127,11 +89,10 @@ def main():
         "title": title,
         "url": args.url,
         "bias": article_bias,
-        "sentiment": json.dumps(article_sentiment),
-        "embedding": json.dumps(embed_text(article)),
-        
+        "sentiment": article_sentiment,
+        "embeddings": embed_text(article)
     }
-    post_article(article_obj)
+    print(article_obj)
     
     response = client.chat.completions.create(
         messages=[
@@ -150,14 +111,13 @@ def main():
     topics = response.choices[0].message.content.split('\n')
     specific_points = []
     for topic in topics:
-        print('topic', topic)
         assert len(topic) <= 512
         specific_points.append({
             "article_id": article_obj["id"],
             "original_excerpt": topic,
             "bias": detect_bias(topic),
             "sentiment": detect_sentiment(topic),
-            "embedding": embed_text(topic)
+            "embeddings": embed_text(topic)
         })
     for point in specific_points:
         post_specific_point(point)
