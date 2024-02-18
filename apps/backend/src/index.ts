@@ -43,6 +43,8 @@ const router = t.router({
 		}),
 });
 
+export type Router = typeof router;
+
 const app = new Elysia().use(swagger()).use(trpc(router)).listen(3000);
 
 export type App = typeof app;
