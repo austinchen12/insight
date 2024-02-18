@@ -1,15 +1,7 @@
 import { useState } from "react";
 import { BsFillXCircleFill } from "react-icons/bs";
 import { FaAngleDown, FaAngleUp, FaCheckCircle } from "react-icons/fa";
-import { GoShare } from "react-icons/go";
-import { RadialBar, RadialBarChart } from "recharts";
 
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
 import { PinkProgress, PurpleProgress } from "~/components/ui/progress";
 import { urlToSiteAbbreviation } from "~lib/utils";
