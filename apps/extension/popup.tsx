@@ -19,7 +19,7 @@ function IndexPopup() {
 				<div
 					className="flex justify-between items-center px-4 border-b border-white py-2"
 					style={{ fontWeight: 600 }}>
-					<h1 className="text-2xl text-dark-green">Insight Critter</h1>
+					<h1 className="text-2xl text-primary">Insight Critter</h1>
 					<img src={logo} alt="Icon" draggable={false} className="h-12 w-12" />
 				</div>
 
