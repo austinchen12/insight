@@ -15,8 +15,9 @@ export const sentimentSchema = t.Object({
 export type Sentiment = Static<typeof sentimentSchema>;
 
 export const articles = sqliteTable("articles", {
-	id: text("id").primaryKey(),
-	// .$defaultFn(() => nanoid()),
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => nanoid()),
 	title: text("title").notNull(),
 	url: text("url").notNull(),
 	bias: real("bias").notNull(),
@@ -33,8 +34,9 @@ export const insertArticles = createInsertSchema(articles, {
 });
 
 export const specificPoints = sqliteTable("specific_points", {
-	id: text("id").primaryKey(),
-	// .$defaultFn(() => nanoid()),
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => nanoid()),
 	article_id: text("article_id").notNull(),
 	original_excerpt: text("original_excerpt").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
@@ -53,8 +55,9 @@ export const insertSpecificPoints = createInsertSchema(specificPoints, {
 });
 
 export const supersetPoints = sqliteTable("superset_points", {
-	id: text("id").primaryKey(),
-	// .$defaultFn(() => nanoid()),
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => nanoid()),
 	title_generated: text("title_generated").notNull(),
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
