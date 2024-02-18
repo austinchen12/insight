@@ -12,6 +12,7 @@ import {
 } from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
 import { PinkProgress, PurpleProgress } from "~/components/ui/progress";
+import { urlToSiteAbbreviation } from "~lib/utils";
 import type { GlobalData, SpecificPoint, SupersetPoint } from "~popup";
 
 import {
@@ -185,14 +186,14 @@ function TopicCard({
 					</CollapsibleTrigger>
 					<CollapsibleContent>
 						<div className="border-t border-dark mt-1 pt-1">
-							{topic.sites.map((site, idx) => (
+							{data.relevantArticles.map((relevantArticle, idx) => (
 								<StatsRow
 									key={idx}
-									title={site.name}
+									title={urlToSiteAbbreviation(relevantArticle.url)}
 									stat1Title="biased"
-									stat1Val={site.bias}
+									stat1Val={relevantArticle.bias * 100}
 									stat2Title="positive"
-									stat2Val={site.sentiment}
+									stat2Val={relevantArticle.sentiment.POS * 100}
 								/>
 							))}
 						</div>
