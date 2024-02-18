@@ -155,16 +155,49 @@ resolver = [
    "url": "https://www.nytimes.com/2024/02/16/business/media/tucker-carlson-putin-navalny.html",
    "path": "articles/Carlson Putin/Tucker Carlson’s Lesson in the Perils of Giving Airtime to Vladimir Putin - The New York Times.md"
   },
+  # Trump Election Fraud
    {
-   "url": "",
-   "path": ""
+   "url": "https://www.politico.com/news/2024/02/06/trump-indiana-conspiracy-00139973",
+   "path": "articles/Trump Election Fraud/‘Literally off his rocker’ Why Trump is fixated on Indiana - POLITICO.md"
   },
    {
-   "url": "",
-   "path": ""
+   "url": "https://www.wthr.com/article/news/politics/biden-trump-being-challenged-to-keep-them-off-indiana-ballot-president-primary-may-election/531-5f31bf65-d4a9-4678-b061-8d57cc99ec9d",
+   "path": "articles/Trump Election Fraud/Challenges filed to keep Biden, Trump off Indiana ballot  wthr.com.md"
   },
    {
-   "url": "",
-   "path": ""
+   "url": "https://www.nytimes.com/live/2024/02/09/us/trump-biden-election-updates",
+   "path": "articles/Trump Election Fraud/Election 2024 Trump blasts decision not to charge Biden in documents case, citing ‘selective persecution.’ - The New York Times.md"
   },
+  {
+   "url": "https://www.wfyi.org/news/articles/former-president-trump-faces-ballot-challenge-in-indiana#:~:text=The%20challenge%20was%20filed%20with,2020%20election%20to%20Joe%20Biden.",
+   "path": "articles/Trump Election Fraud/Former President Trump faces ballot challenge in Indiana.md"
+  },
+  {
+   "url": "https://www.indystar.com/story/news/politics/elections/2024/02/16/jan-6-subject-of-trump-primary-ballot-challenge-in-indiana/72631205007/",
+   "path": "articles/Trump Election Fraud/Indiana presidential election Jan. 6 cited in Trump ballot challenge.md"
+  },
+  {
+   "url": "https://stateaffairs.com/indiana/elections/indiana-primary-ballot-challenges/",
+   "path": "articles/Trump Election Fraud/Nikki Haley makes Indiana ballot, but others at risk - State Affairs.md"
+  },
+  {
+   "url": "https://fox59.com/indianapolitics/presidential-candidate-nikki-haley-to-appear-on-indiana-republican-primary-ballot/",
+   "path": "articles/Trump Election Fraud/Presidential candidate Nikki Haley to appear on Indiana Republican primary ballot.md"
+  },
+  {
+   "url": "https://apnews.com/live/trump-supreme-court-arguments-updates",
+   "path": "articles/Trump Election Fraud/Supreme Court skeptical of efforts to kick Trump off the ballot  AP News.md"
+  },
+  {
+   "url": "https://apnews.com/article/supreme-court-trump-insurrection-2024-election-0baac5ba0c1868e437e365af17eeab24",
+   "path": "articles/Trump Election Fraud/Supreme Court will decide if Trump can be kept off 2024 presidential ballots  AP News.md"
+  },
+  {
+   "url": "https://www.nytimes.com/interactive/2024/01/02/us/politics/trump-ballot-removal-map.html",
+   "path": "articles/Trump Election Fraud/Tracking State Efforts to Remove Trump From the 2024 Ballot - The New York Times.md"
+  },
+  {
+    "url": "https://www.reuters.com/world/us/trump-address-supporters-after-3549-million-fraud-ruling-2024-02-17/",
+    "path": "articles/Trump Election Fraud/Trump tells supporters his $355 million fraud fine is election interference  Reuters.md"
+  }
 ]
