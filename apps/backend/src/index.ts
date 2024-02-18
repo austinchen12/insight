@@ -32,8 +32,8 @@ export function parse<T extends TSchema>(schema: T, data: unknown) {
 	return C.Decode(data);
 }
 
-const EXECUTE_DATABASE_URL =
-	"https://8e0d-68-65-175-49.ngrok-free.app/execute_sql";
+const BASE_URL = "https://481a-68-65-175-37.ngrok-free.app";
+const EXECUTE_DATABASE_URL = `${BASE_URL}/execute_sql`;
 
 async function execute<T extends TSchema>({
 	sql,
@@ -44,14 +44,28 @@ async function execute<T extends TSchema>({
 	params: Record<string, unknown>;
 	schema: T;
 }) {
+	console.log(
+		"🚀 ~ JSON.stringify({ sql, params }):",
+		JSON.stringify({ sql, params })
+	);
 	const result = await fetch(EXECUTE_DATABASE_URL, {
 		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
 		body: JSON.stringify({ sql, params }),
 	}).then((res) => {
+		console.log("🚀 ~ res:", res);
 		if (!res.ok) throw new Error("Failed to execute SQL");
+		console.log(res);
 		return res.json();
 	});
-	return parse(schema, result);
+	console.log("🚀 ~ result:", result);
+	try {
+		return parse(schema, result);
+	} catch (e) {
+		console.error({ e, sql, params, result });
+	}
 }
 
 // const t = initTRPC.create();
@@ -106,20 +120,35 @@ const app = new Elysia()
 			allowedHeaders: ["*"],
 		})
 	)
+	.get("/", () => "Hello, world!")
 	.get(
 		"/getGlobalData",
 		async ({ query }): Promise<GlobalData> => {
 			const { url } = query;
+			console.log("🚀 ~ url:", url);
+			const relevantArticles2 = await fetch(
+				`${BASE_URL}/find_similar_articles`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ url }),
+				}
+			).then((response) => response.json());
+			console.log("🚀 ~ relevantArticles2:", relevantArticles2);
 			const thisArticle = await execute({
 				sql: "SELECT * FROM articles WHERE url = :url",
 				params: { url },
 				schema: selectArticlesSchema,
 			});
+			console.log("🚀 ~ thisArticle:", thisArticle);
 			const thisArticleSpecificPoints = await execute({
 				sql: "SELECT * FROM specific_points WHERE article_id = :id",
 				params: { id: thisArticle.id },
 				schema: t.Array(selectSpecificPointsSchema),
 			});
+			console.log("🚀 ~ thisArticleSpecificPoints:", thisArticleSpecificPoints);
 			const relevantArticles = await execute({
 				sql: "SELECT * FROM articles WHERE url != :url",
 				params: { url },
