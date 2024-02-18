@@ -48,10 +48,6 @@ async function execute<T extends TSchema>({
 	params: Record<string, unknown>;
 	schema: T;
 }) {
-	console.log(
-		"🚀 ~ JSON.stringify({ sql, params }):",
-		JSON.stringify({ sql, params })
-	);
 	const result = await fetch(EXECUTE_DATABASE_URL, {
 		method: "POST",
 		headers: {
@@ -59,17 +55,10 @@ async function execute<T extends TSchema>({
 		},
 		body: JSON.stringify({ sql, params }),
 	}).then((res) => {
-		console.log("🚀 ~ res:", res);
 		if (!res.ok) throw new Error("Failed to execute SQL");
-		console.log(res);
 		return res.json();
 	});
-	console.log("🚀 ~ result:", result);
-	try {
-		return parse(schema, result);
-	} catch (e) {
-		console.error({ e, sql, params, result });
-	}
+	return parse(schema, result);
 }
 
 // const t = initTRPC.create();
@@ -141,7 +130,6 @@ const app = new Elysia()
 			)
 				.then((response) => response.json())
 				.then((data) => {
-					console.log("🚀 ~ data:", data);
 					data.article.sentiment = JSON.parse(data.article.sentiment);
 					data.relevantArticles = data.relevantArticles.map((article: any) => {
 						article.sentiment = JSON.parse(article.sentiment);
@@ -155,14 +143,12 @@ const app = new Elysia()
 						data
 					);
 				});
-			console.log("🚀 ~ thisArticle:", thisArticle, relevantArticles);
 			if (!thisArticle) throw new Error("Article not found");
 			const thisArticleSpecificPoints = await execute({
 				sql: "SELECT * FROM specific_points WHERE article_id = :id",
 				params: { id: thisArticle.id },
 				schema: t.Array(selectSpecificPointsSchema),
 			});
-			console.log("🚀 ~ thisArticleSpecificPoints:", thisArticleSpecificPoints);
 			const relevantArticlesWithSpecificPoints: SelectArticleJoinedSpecificPoints[] =
 				await Promise.all(
 					relevantArticles.map(async (article) => {
