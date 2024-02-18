@@ -110,15 +110,16 @@ function TopicCard({
 
 	const connectedRelatedPoints: SelectSpecificPoint[] = [];
 	for (const relevantArticle of data.relevantArticles) {
-		const connectedPoints = relevantArticle.specificPoints.filter(
-			(point) => point.superset_point_id == supersetPoint.id
-		);
+		const connectedPoints = [];
+		// const connectedPoints = relevantArticle.specificPoints.filter(
+		// 	(point) => point.superset_point_id == supersetPoint.id
+		// );
 		connectedRelatedPoints.push(...connectedPoints);
 	}
 
 	let avgRelatedBias = 0;
 	for (const connectedPoint of connectedRelatedPoints) {
-		avgRelatedBias += connectedPoint.bias.biased;
+		avgRelatedBias += connectedPoint.bias;
 	}
 	avgRelatedBias = (avgRelatedBias * 100) / connectedRelatedPoints.length;
 
