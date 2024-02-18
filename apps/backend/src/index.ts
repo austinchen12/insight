@@ -129,8 +129,7 @@ const app = new Elysia()
 		"/getGlobalData",
 		async ({ query }): Promise<GlobalData> => {
 			const { url } = query;
-			console.log("🚀 ~ url:", url);
-			const relevantArticles2 = await fetch(
+			const { article: thisArticle, relevantArticles } = await fetch(
 				`${BASE_URL}/find_similar_articles`,
 				{
 					method: "POST",
@@ -143,6 +142,11 @@ const app = new Elysia()
 				.then((response) => response.json())
 				.then((data) => {
 					console.log("🚀 ~ data:", data);
+					data.article.sentiment = JSON.parse(data.article.sentiment);
+					data.relevantArticles = data.relevantArticles.map((article: any) => {
+						article.sentiment = JSON.parse(article.sentiment);
+						return article;
+					});
 					return parse(
 						t.Object({
 							article: t.Nullable(selectArticlesSchema),
@@ -151,24 +155,14 @@ const app = new Elysia()
 						data
 					);
 				});
-			console.log("🚀 ~ relevantArticles2:", relevantArticles2);
-			const thisArticle = await execute({
-				sql: "SELECT * FROM articles WHERE url = :url",
-				params: { url },
-				schema: selectArticlesSchema,
-			});
-			console.log("🚀 ~ thisArticle:", thisArticle);
+			console.log("🚀 ~ thisArticle:", thisArticle, relevantArticles);
+			if (!thisArticle) throw new Error("Article not found");
 			const thisArticleSpecificPoints = await execute({
 				sql: "SELECT * FROM specific_points WHERE article_id = :id",
 				params: { id: thisArticle.id },
 				schema: t.Array(selectSpecificPointsSchema),
 			});
 			console.log("🚀 ~ thisArticleSpecificPoints:", thisArticleSpecificPoints);
-			const relevantArticles = await execute({
-				sql: "SELECT * FROM articles WHERE url != :url",
-				params: { url },
-				schema: t.Array(selectArticlesSchema),
-			});
 			const relevantArticlesWithSpecificPoints: SelectArticleJoinedSpecificPoints[] =
 				await Promise.all(
 					relevantArticles.map(async (article) => {
