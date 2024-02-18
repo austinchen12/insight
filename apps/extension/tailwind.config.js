@@ -4,10 +4,7 @@ module.exports = {
 	prefix: "",
 	theme: {
 		colors: {
-			bg: "#EAFFAB",
 			pink: "#FF3B69",
-			"dark-green": "#159D69",
-			"content-box": "#C4EB20",
 			orange: "#FEA419",
 			purple: "#A059FF",
 			dark: "#0E1734",
