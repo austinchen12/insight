@@ -49,14 +49,22 @@ def find_similar_articles():
         SELECT *,
         VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) AS dot_product_result
         FROM articles
+        WHERE VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) > 0.75
         ORDER BY dot_product_result DESC
     """)
-    #WHERE VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) > 0.6
+    
 
     try:
         with engine.connect() as connection:
-            result = connection.execute(sql, {'search_vector': str(search_vector)}).fetchall()
-            return jsonify({'result': [list(row) for row in result]})
+            result = connection.execute(sql, {'search_vector': str(search_vector)})
+            article = None
+            relevantArticles = []
+            for row in result.mappings():
+                if row['url'] == path:
+                    article = dict(row)
+                else:
+                    relevantArticles.append(dict(row))
+            return jsonify({'article': article, 'relevantArticles': relevantArticles})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
