@@ -217,7 +217,7 @@ function ScannedArticle({ article }) {
 			onClick={openArticle}>
 			<CardHeader>
 				<CardTitle className="text-sm">{article.title}</CardTitle>
-				<CardDescription className="text-xs">
+				<CardDescription className="text-xs text-primary">
 					{article.site} &#183; {article.bias}% bias &#183; {article.positive}%
 					positive
 				</CardDescription>
