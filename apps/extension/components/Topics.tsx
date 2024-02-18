@@ -153,7 +153,7 @@ function TopicCard({
 						<StatsRow
 							title="This article"
 							stat1Title="biased"
-							stat1Val={connectedPoint.bias.biased * 100}
+							stat1Val={connectedPoint.bias * 100}
 							stat2Title="positive"
 							stat2Val={connectedPoint.sentiment.POS * 100}
 						/>
