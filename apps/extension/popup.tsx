@@ -28,9 +28,23 @@ function Layout({ children }: { children: React.ReactNode }) {
 	);
 }
 
+const EMPTY_GLOBAL_DATA = {
+	thisArticle: {
+		id: "",
+		title: "",
+		url: "",
+		bias: 0,
+		sentiment: { NEG: 0, NEU: 0, POS: 0 },
+		embedding: [],
+		specificPoints: [],
+	},
+	relevantArticles: [],
+	supersetPoints: [],
+};
+
 function IndexPopup() {
 	const [page, setPage] = useState<"summary" | "topics">("summary");
-	const [data, setData] = useState<GlobalData>();
+	const [data, setData] = useState<GlobalData>(EMPTY_GLOBAL_DATA);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
@@ -47,7 +61,7 @@ function IndexPopup() {
 
 	return (
 		<Layout>
-			{isLoading ? (
+			{!isLoading ? (
 				<div className="flex items-center justify-center">Loading...</div>
 			) : (
 				<div className="pb-16">
