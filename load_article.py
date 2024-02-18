@@ -6,6 +6,8 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
+from sklearn.cluster import DBSCAN
+import numpy as np
 
 load_dotenv(override=True)
 
@@ -36,12 +38,14 @@ def fetch_article(url):
             return title, article
     except FileNotFoundError:
         print('Article not found.')
-    
 
 def detect_bias(input):
     try:
         response = requests.post(BIAS_URL, headers=headers, json={
-            "inputs": input
+            "inputs": input,
+            "options": {
+                "wait_for_model": True
+            }
         })
         if response.status_code != 200:
             print(f'BIAS {response.status_code}: ', response.json())
@@ -56,7 +60,10 @@ def detect_bias(input):
 def detect_sentiment(input):
     try:
         response = requests.post(SENTIMENT_URL, headers=headers, json={
-            "inputs": input
+            "inputs": input,
+            "options": {
+                "wait_for_model": True
+            }
         })
         if response.status_code != 200:
             print(f'SENTIMENT {response.status_code}: ', response.json())
@@ -72,7 +79,6 @@ def detect_sentiment(input):
 
 def embed_text(text):
     return model.encode(text, normalize_embeddings=True).tolist()
-
 
 def post_article(article):
     try:
@@ -122,6 +128,63 @@ def post_superset_point(point):
         print('SUPERSET ERROR: ', e.message)
         exit(1)
 
+def find_markdown_files(root_directory):
+    """Walk through the directories to find all Markdown files."""
+    markdown_files = []
+    for dirpath, dirnames, files in os.walk(root_directory):
+        for file in files:
+            if file.endswith('.md'):
+                markdown_files.append(os.path.join(dirpath, file))
+    return markdown_files
+
+def read_markdown_file(file_path):
+    """Read and return the content of a Markdown file."""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+          return file.read()
+    except:
+        print("Error", file_path)
+
+def get_clusters(embeddings):
+    clusterer = DBSCAN(eps=0.999, min_samples=1, metric='euclidean')
+    cluster_labels = clusterer.fit_predict(embeddings)
+    cluster_labels = clusterer.labels_
+
+    # Points that are not clustered with anything else are returned as -1, so we need to make them their own label instead
+    max_label = max(cluster_labels)
+
+    # Replace each -1 with a new unique label
+    new_cluster_labels = []
+    next_new_label = max_label + 1
+    for label in cluster_labels:
+        if label == -1:
+            new_cluster_labels.append(next_new_label)
+            next_new_label += 1
+        else:
+            new_cluster_labels.append(label)
+
+    # Convert the list back to a numpy array if needed
+    new_cluster_labels = np.array(new_cluster_labels)
+    num_clusters = max(new_cluster_labels) + 1
+
+    return new_cluster_labels, num_clusters
+
+def get_cluster_summary(texts):
+    response = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": f"""Summarize all of the following strings (which should be related to each other) into one 5-10 word sentence. Only return the string and no other text at all.
+                Strings: {"-BREAK BETWEEN STRINGS-".join(texts)[:1000]}""",
+            }
+        ],
+        model="gpt-3.5-turbo-1106",
+      )
+
+    summary = response.choices[0].message.content
+    return summary
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('url', help='The article to load')
@@ -144,19 +207,28 @@ def main():
         messages=[
             {
                 "role": "user",
-                "content": f"You are a politically neutral reader that want's to help other people identify potential biases in the media they ingest. You will be given articles that people have read and I want you to identify the key topics of this article. Topics should be sentences rather than a list of words. Response should be word for word from the original text and be formatted as a single string with topics separated by a new line character. Do not prefix your response with any special characters like a dash.",
+                "content": """You are a politically neutral reader that want's to help other people identify potential biases in the media they ingest. 
+                You will be given articles that people have read and I want you to identify the key topics of this article. 
+                Topics should be sentences rather than a list of words. Response should be word for word from the original text and be formatted as a single string with topics separated by a new line character.
+                  Do not prefix your response with any special characters like a dash.
+                  Shoot for 3-5 topics, and only the most broad nad important ones.
+                  
+                  Your output type is a JSON LIST of strings of these chunks of original text, each one being a unique important topic.
+                  
+                  Example:{ topics:["topic 1", "topic 2", "topic 3", ]}""",
             },
             {
                 "role": "user",
                 "content": f"{article}",
             }
         ],
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
+        response_format={ "type": "json_object" }
     )
 
     topics = response.choices[0].message.content.split('\n')
     specific_points = []
-    for topic in [topics[0]]:
+    for topic in topics:
         assert len(topic) <= 512
         specific_points.append({
             "article_id": article_obj["id"],
@@ -168,6 +240,28 @@ def main():
     for point in specific_points:
         post_specific_point(point)
 
+    embeddings = []
+    printed_texts = []
+    for specific_point in specific_points:
+        embeddings.append(json.loads(specific_point["embedding"]))
+        printed_texts.append(specific_point["original_excerpt"])
+
+    cluster_labels, num_clusters = get_clusters(embeddings)
+
+    grouped_points_by_cluster = [[] for _ in range(num_clusters)]
+    for i in range(len(specific_points)):
+        cluster_label = cluster_labels[i]
+        specific_point = specific_points[i]
+        grouped_points_by_cluster[cluster_label].append(specific_point)
     
+    cluster_summaries = []
+    for grouped_points in grouped_points_by_cluster:
+        original_excerpts = []
+        for point in grouped_points:
+            original_excerpts.append(point["original_excerpt"])
+
+        cluster_summary = get_cluster_summary(original_excerpts)
+        cluster_summaries.append(cluster_summary)
+
 if __name__ == '__main__':
     main()
