@@ -20,27 +20,18 @@ importers:
       '@elysiajs/swagger':
         specifier: ^0.8.5
         version: 0.8.5(elysia@0.8.17)
-      '@elysiajs/trpc':
-        specifier: ^0.8.0
-        version: 0.8.0(elysia@0.8.17)
-      '@elysiajs/websocket':
-        specifier: ^0.2.8
-        version: 0.2.8(elysia@0.8.17)
       '@libsql/client':
         specifier: ^0.5.0
         version: 0.5.0
-      '@trpc/server':
-        specifier: ^10.45.1
-        version: 10.45.1
       drizzle-orm:
         specifier: ^0.29.3
         version: 0.29.3(@libsql/client@0.5.0)(bun-types@1.0.27)
-      drizzle-zod:
-        specifier: ^0.5.1
-        version: 0.5.1(drizzle-orm@0.29.3)(zod@3.22.4)
+      drizzle-typebox:
+        specifier: ^0.1.1
+        version: 0.1.1(@sinclair/typebox@0.32.14)(drizzle-orm@0.29.3)
       elysia:
         specifier: latest
-        version: 0.8.17
+        version: 0.8.17(@sinclair/typebox@0.32.14)
       nanoid:
         specifier: ^5.0.5
         version: 5.0.5
@@ -330,27 +321,9 @@ packages:
     peerDependencies:
       elysia: '>= 0.8.0'
     dependencies:
-      elysia: 0.8.17
+      elysia: 0.8.17(@sinclair/typebox@0.32.14)
       lodash.clonedeep: 4.5.0
       openapi-types: 12.1.3
-    dev: false
-
-  /@elysiajs/trpc@0.8.0(elysia@0.8.17):
-    resolution: {integrity: sha512-i1TTI1kwvGidIuf1Jrv2erHKK2dRQeh1zJ9Ep3TiCJOK8/JOhuMPHoe3LLAmP/iIFgUjhwIwgU65zfF72Xcdtg==}
-    peerDependencies:
-      elysia: '>= 0.8.0'
-    dependencies:
-      elysia: 0.8.17
-    dev: false
-
-  /@elysiajs/websocket@0.2.8(elysia@0.8.17):
-    resolution: {integrity: sha512-K9KLmYL1SYuAV353GvmK0V9DG5w7XTOGsa1H1dGB5BUTzvBaMvnwNeqnJQ3cjf9V1c0EjQds0Ty4LfUFvV45jw==}
-    peerDependencies:
-      elysia: '>= 0.2.2'
-    dependencies:
-      elysia: 0.8.17
-      nanoid: 4.0.2
-      raikiri: 0.0.0-beta.8
     dev: false
 
   /@esbuild-kit/core-utils@3.3.2:
@@ -2656,6 +2629,10 @@ packages:
       config-chain: 1.1.13
     dev: false
 
+  /@sinclair/typebox@0.32.14:
+    resolution: {integrity: sha512-EC77Mw8huT2z9YlYbWfpIQgN6shZE1tH4NP4/Trig8UBel9FZNMZRJ42ubJI8PLor2uIU+waLml1dce5ReCOPg==}
+    dev: false
+
   /@sindresorhus/is@5.6.0:
     resolution: {integrity: sha512-TV7t8GKYaJWsn00tFDqBw8+Uqmr8A0fRU1tvTQhyZzGv0sJCGRQL3JGMI3ucuKo3XIZdUP+Lx7/gh2t3lewy7g==}
     engines: {node: '>=14.16'}
@@ -3046,10 +3023,6 @@ packages:
     engines: {node: '>=14.16'}
     dependencies:
       defer-to-connect: 2.0.1
-    dev: false
-
-  /@trpc/server@10.45.1:
-    resolution: {integrity: sha512-KOzBEVaHW9IxEedUP9E50y0tYxAuvlzyjn80Bpemw4rcNbT4WtJnhkFPUY+qDJl7Crt3B/oY2qMgSxVWi9toLg==}
     dev: false
 
   /@trysound/sax@0.2.0:
@@ -4020,14 +3993,14 @@ packages:
       bun-types: 1.0.27
     dev: false
 
-  /drizzle-zod@0.5.1(drizzle-orm@0.29.3)(zod@3.22.4):
-    resolution: {integrity: sha512-C/8bvzUH/zSnVfwdSibOgFjLhtDtbKYmkbPbUCq46QZyZCH6kODIMSOgZ8R7rVjoI+tCj3k06MRJMDqsIeoS4A==}
+  /drizzle-typebox@0.1.1(@sinclair/typebox@0.32.14)(drizzle-orm@0.29.3):
+    resolution: {integrity: sha512-eNIDe+EOCB96/bbRHOPbrC+bsuCXFd2H0/96Fl0cJkY+NKnu2qLTnGI6ILXPbyu82Yr1tsShlzDypw+VeCDqaQ==}
     peerDependencies:
+      '@sinclair/typebox': '>=0.17.6'
       drizzle-orm: '>=0.23.13'
-      zod: '*'
     dependencies:
+      '@sinclair/typebox': 0.32.14
       drizzle-orm: 0.29.3(@libsql/client@0.5.0)(bun-types@1.0.27)
-      zod: 3.22.4
     dev: false
 
   /eastasianwidth@0.2.0:
@@ -4036,7 +4009,7 @@ packages:
   /electron-to-chromium@1.4.673:
     resolution: {integrity: sha512-zjqzx4N7xGdl5468G+vcgzDhaHkaYgVcf9MqgexcTqsl2UHSCmOj/Bi3HAprg4BZCpC7HyD8a6nZl6QAZf72gw==}
 
-  /elysia@0.8.17:
+  /elysia@0.8.17(@sinclair/typebox@0.32.14):
     resolution: {integrity: sha512-hqKHKUxbvlDHnobudtna5nBoGiZ4oa0xdnhynLAJF3+6gTYHAcQ/8/IyxUx5Az5Uy0zTuNiv7m2bIFu7xeMiWg==}
     peerDependencies:
       '@sinclair/typebox': '>= 0.31.0'
@@ -4050,6 +4023,7 @@ packages:
       typescript:
         optional: true
     dependencies:
+      '@sinclair/typebox': 0.32.14
       cookie: 0.6.0
       eventemitter3: 5.0.1
       fast-decode-uri-component: 1.0.1
@@ -5475,12 +5449,6 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  /nanoid@4.0.2:
-    resolution: {integrity: sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==}
-    engines: {node: ^14 || ^16 || >=18}
-    hasBin: true
-    dev: false
-
   /nanoid@5.0.5:
     resolution: {integrity: sha512-/Veqm+QKsyMY3kqi4faWplnY1u+VuKO3dD2binyPIybP31DRO29bPF+1mszgLnrR2KqSLceFLBNw0zmvDzN1QQ==}
     engines: {node: ^18 || >=20}
@@ -5982,10 +5950,6 @@ packages:
   /quick-lru@5.1.1:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
     engines: {node: '>=10'}
-    dev: false
-
-  /raikiri@0.0.0-beta.8:
-    resolution: {integrity: sha512-cH/yfvkiGkN8IBB2MkRHikpPurTnd2sMkQ/xtGpXrp3O76P4ppcWPb+86mJaBDzKaclLnSX+9NnT79D7ifH4/w==}
     dev: false
 
   /rc@1.2.8:
