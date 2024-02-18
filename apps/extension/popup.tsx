@@ -25,21 +25,32 @@ function IndexPopup() {
 				{page == "summary" ? <Summary /> : <Topics />}
 			</div>
 
-			{/* Footer */}
-			<div
-				className="h-[3rem] flex justify-center gap-4 items-center px-4 border-t border-white "
-				style={{ fontWeight: 600 }}>
-				<button
-					onClick={() => setPage("summary")}
-					className={page == "summary" && "border-b-2 border-dark-green "}>
-					<MdOutlineLibraryBooks className={`h-8 w-8 `} />
-				</button>
-				<button
-					onClick={() => setPage("topics")}
-					className={page == "topics" && "border-b-2 border-dark-green "}>
-					<FaList className={`h-6 w-6 `} />
-				</button>
-			</div>
+			<Footer page={page} onPageChange={setPage} />
+		</div>
+	);
+}
+
+function Footer({
+	page,
+	onPageChange,
+}: {
+	page: "summary" | "topics";
+	onPageChange: (page: "summary" | "topics") => void;
+}) {
+	return (
+		<div
+			className="h-[3rem] flex justify-center gap-4 items-center px-4 border-t border-white "
+			style={{ fontWeight: 600 }}>
+			<button
+				onClick={() => onPageChange("summary")}
+				className={page == "summary" && "border-b-2 border-dark-green "}>
+				<MdOutlineLibraryBooks className={`h-8 w-8 `} />
+			</button>
+			<button
+				onClick={() => onPageChange("topics")}
+				className={page == "topics" && "border-b-2 border-dark-green "}>
+				<FaList className={`h-6 w-6 `} />
+			</button>
 		</div>
 	);
 }
