@@ -35,7 +35,7 @@ export const specificPoints = sqliteTable("specific_points", {
 	embedding: text("embedding", { mode: "json" }).notNull(),
 	bias: real("bias").notNull(),
 	sentiment: text("sentiment", { mode: "json" }).$type<Sentiment>().notNull(),
-	superset_point_id: text("superset_point_id").notNull(),
+	superset_point_id: text("superset_point_id"),
 });
 
 export const insertSpecificPoints = createInsertSchema(specificPoints, {
