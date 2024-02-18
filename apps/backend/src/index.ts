@@ -26,14 +26,18 @@ export type GlobalData = {
 };
 
 export function parse<T extends TSchema>(schema: T, data: unknown) {
-	const C = TypeCompiler.Compile(schema);
-	const isValid = C.Check(data);
-	if (!isValid) {
-		const errors = [...C.Errors(data)];
-		console.error(errors);
-		throw errors;
+	try {
+		const C = TypeCompiler.Compile(schema);
+		const isValid = C.Check(data);
+		if (!isValid) {
+			const errors = [...C.Errors(data)];
+			throw errors;
+		}
+		return C.Decode(data);
+	} catch (error) {
+		console.log("🚀 ~ data:", data);
+		console.error(error);
 	}
-	return C.Decode(data);
 }
 
 const BASE_URL = "https://481a-68-65-175-37.ngrok-free.app";
@@ -48,17 +52,33 @@ async function execute<T extends TSchema>({
 	params: Record<string, unknown>;
 	schema: T;
 }) {
-	const result = await fetch(EXECUTE_DATABASE_URL, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ sql, params }),
-	}).then((res) => {
-		if (!res.ok) throw new Error("Failed to execute SQL");
-		return res.json();
-	});
-	return parse(schema, result);
+	try {
+		const result = await fetch(EXECUTE_DATABASE_URL, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ sql, params }),
+		})
+			.then((res) => {
+				if (!res.ok) throw new Error("Failed to execute SQL");
+				return res.json();
+			})
+			.then((data) => data.result)
+			.then((rows) => {
+				return rows.map((row: any) =>
+					Object.entries(row).reduce((acc, [key, value]) => {
+						if (key === "sentiment") {
+							return { ...acc, [key]: JSON.parse(value.replaceAll("'", '"')) };
+						}
+						return { ...acc, [key]: value };
+					}, {})
+				);
+			});
+		return parse(schema, result);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // const t = initTRPC.create();
@@ -118,6 +138,7 @@ const app = new Elysia()
 		"/getGlobalData",
 		async ({ query }): Promise<GlobalData> => {
 			const { url } = query;
+			console.log("🚀 ~ url:", url);
 			const { article: thisArticle, relevantArticles } = await fetch(
 				`${BASE_URL}/find_similar_articles`,
 				{
@@ -143,34 +164,27 @@ const app = new Elysia()
 						data
 					);
 				});
+			console.log("🚀 ~ thisArticle:", thisArticle);
+			console.log("🚀 ~ relevantArticles:", relevantArticles);
 			if (!thisArticle) throw new Error("Article not found");
 			const thisArticleSpecificPoints = await execute({
 				sql: "SELECT * FROM specific_points WHERE article_id = :id",
 				params: { id: thisArticle.id },
 				schema: t.Array(selectSpecificPointsSchema),
 			});
-			const relevantArticlesWithSpecificPoints: SelectArticleJoinedSpecificPoints[] =
-				await Promise.all(
-					relevantArticles.map(async (article) => {
-						const specificPoints = await execute({
-							sql: "SELECT * FROM specific_points WHERE article_id = :id",
-							params: { id: article.id },
-							schema: t.Array(selectSpecificPointsSchema),
-						});
-						return { ...article, specificPoints };
-					})
-				);
+			console.log("🚀 ~ thisArticleSpecificPoints:", thisArticleSpecificPoints);
 			const supersetPoints = await execute({
 				sql: "SELECT * FROM superset_points",
 				params: {},
 				schema: t.Array(selectSupersetPointsSchema),
 			});
+			console.log("🚀 ~ supersetPoints:", supersetPoints);
 			return {
 				thisArticle: {
 					...thisArticle,
 					specificPoints: thisArticleSpecificPoints,
 				},
-				relevantArticles: relevantArticlesWithSpecificPoints,
+				relevantArticles,
 				supersetPoints,
 			};
 		},
