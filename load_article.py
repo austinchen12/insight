@@ -145,48 +145,6 @@ def read_markdown_file(file_path):
     except:
         print("Error", file_path)
 
-def get_specific_points(file_contents):
-    specific_points = []
-
-    for file in file_contents:
-
-      response = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": """You are a politically neutral reader that want's to help other people identify potential biases in the media they ingest. 
-                You will be given articles that people have read and I want you to identify the key topics of this article. 
-                Topics should be sentences rather than a list of words. Response should be word for word from the original text and be formatted as a single string with topics separated by a new line character.
-                  Do not prefix your response with any special characters like a dash.
-                  Shoot for 3-5 topics, and only the most broad nad important ones.
-                  
-                  Your output type is a JSON LIST of strings of these chunks of original text, each one being a unique important topic.
-                  
-                  Example:{ topics:["topic 1", "topic 2", "topic 3", ]}""",
-            },
-            {
-                "role": "user",
-                "content": f"{file}",
-            }
-        ],
-        model="gpt-3.5-turbo-1106",
-        response_format={ "type": "json_object" }
-      )
-
-      topics = response.choices[0].message.content
-      data_json = json.loads(topics)
-
-      for topic in data_json["topics"]:
-          specific_points.append({
-              # "article_id": article_obj["id"],
-              "original_excerpt": topic,
-              "bias": detect_bias(topic),
-              "sentiment": detect_sentiment(topic),
-              "embedding": embed_text(topic)
-          })
-
-    return specific_points
-
 def get_clusters(embeddings):
     clusterer = DBSCAN(eps=0.999, min_samples=1, metric='euclidean')
     cluster_labels = clusterer.fit_predict(embeddings)
@@ -249,14 +207,23 @@ def main():
         messages=[
             {
                 "role": "user",
-                "content": f"You are a politically neutral reader that want's to help other people identify potential biases in the media they ingest. You will be given articles that people have read and I want you to identify the key topics of this article. Topics should be sentences rather than a list of words. Response should be word for word from the original text and be formatted as a single string with topics separated by a new line character. Do not prefix your response with any special characters like a dash.",
+                "content": """You are a politically neutral reader that want's to help other people identify potential biases in the media they ingest. 
+                You will be given articles that people have read and I want you to identify the key topics of this article. 
+                Topics should be sentences rather than a list of words. Response should be word for word from the original text and be formatted as a single string with topics separated by a new line character.
+                  Do not prefix your response with any special characters like a dash.
+                  Shoot for 3-5 topics, and only the most broad nad important ones.
+                  
+                  Your output type is a JSON LIST of strings of these chunks of original text, each one being a unique important topic.
+                  
+                  Example:{ topics:["topic 1", "topic 2", "topic 3", ]}""",
             },
             {
                 "role": "user",
                 "content": f"{article}",
             }
         ],
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
+        response_format={ "type": "json_object" }
     )
 
     topics = response.choices[0].message.content.split('\n')
