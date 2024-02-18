@@ -57,3 +57,9 @@ Additionally, we really enjoyed engaging with new technologies and learning how 
 Developing Kaleido was a pleasure, and our team really enjoyed working together, learning new technologies, and making new friends.
 
 Now, we hope you will join us in our quest to illuminate the unseen, enhance your reading experience, and equip you with the insights needed to face the misinformation challenge head-on. Together, let's create a more informed society ready to make educated decisions for the future 🌍.
+
+## Creators 👨‍💻
+
+- **Austin Chen**
+- **Braden Wong**
+- **Joe Zakielarz**
