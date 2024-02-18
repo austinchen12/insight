@@ -137,7 +137,7 @@ function Summary() {
 
 			<div className="flex justify-between items-center mt-2">
 				{/* Bias */}
-				<Card className="h-36 w-full flex flex-col items-center">
+				<Card className="w-full flex flex-col items-center">
 					<RadialBarChart
 						width={100}
 						height={100}
@@ -163,7 +163,7 @@ function Summary() {
 				</Card>
 
 				{/* Sentiment */}
-				<Card className="h-36 w-full flex flex-col items-center">
+				<Card className="w-full flex flex-col items-center">
 					<RadialBarChart
 						width={100}
 						height={100}
