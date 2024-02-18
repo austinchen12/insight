@@ -120,12 +120,12 @@ function TopicCard({ topic }) {
 				<CardDescription>
 					{topic.included ? (
 						<div className="flex gap-1 items-center text-primary/75">
-							<FaCheckCircle color="#A0CA21" />
+							<FaCheckCircle className="text-primary/75" />
 							<p>This article includes this topic</p>
 						</div>
 					) : (
 						<div className="flex gap-1 items-center text-muted-foreground/60">
-							<BsFillXCircleFill color="#B3B5AC" />
+							<BsFillXCircleFill className="text-muted-foreground/60" />
 							<p>This article does not include this topic</p>
 						</div>
 					)}
