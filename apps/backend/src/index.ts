@@ -12,6 +12,15 @@ import {
 
 const app = new Elysia()
 	.use(swagger())
+	.get(
+		"/articles/find-similar",
+		({ body }) => {
+			// ...
+		},
+		{
+			body: t.Object({ url: t.String() }),
+		}
+	)
 	.post(
 		"/articles",
 		async ({ body }) => {
