@@ -156,7 +156,12 @@ function Summary({ data }: { data: GlobalData }) {
 					Summary
 				</h2>
 
-				<Button className="py-2">
+				<Button
+					className="py-2"
+					onClick={() => {
+						const tweetUrl = `https://twitter.com/intent/tweet?text=${"Check out Kaleido"}`;
+						window.open(tweetUrl, "_blank");
+					}}>
 					Share <GoShare className="ml-2 h-4 w-4" />
 				</Button>
 			</div>
