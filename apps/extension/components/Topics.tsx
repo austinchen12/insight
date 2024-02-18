@@ -56,7 +56,7 @@ function Topics() {
 	];
 
 	return (
-		<div className="px-3 py-2">
+		<div className="flex flex-col gap-2 px-3 py-2">
 			<div className="flex justify-between items-center">
 				<h2 className="text-lg text-dark mb-2" style={{ fontWeight: 400 }}>
 					Topics
@@ -68,7 +68,7 @@ function Topics() {
 			</div>
 
 			{/* Topics overview */}
-			<div className="flex gap-3">
+			<div className="flex gap-2">
 				<TopicOverviewNote
 					stat1={1}
 					stat2={sampleTopics.length}
