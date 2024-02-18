@@ -63,11 +63,22 @@ function IndexPopup() {
 		async function loadData() {
 			setData(undefined);
 
-			// setData();
+			// TODO: grab data
+
+			try {
+				const returnedData: GlobalData = await axios.get(
+					`...?url=${encodeURIComponent(url)}`
+				);
+
+				setData(returnedData);
+			} catch (e) {
+				console.error(e);
+				setData(undefined);
+			}
 		}
 
-		loadData();
-	}, []);
+		if (url) loadData();
+	}, [url]);
 
 	return (
 		<div className="font-fredoka h-[600px] w-[400px] flex flex-col">
