@@ -42,13 +42,13 @@ function Footer({
 	return (
 		<div className="w-full bg-background flex justify-between items-center border-t fixed bottom-0">
 			<Button
-				className="w-full"
+				className="w-full rounded-none"
 				onClick={() => onPageChange("summary")}
 				variant={page === "summary" ? "default" : "ghost"}>
 				<MdOutlineLibraryBooks className="h-4 w-4" />
 			</Button>
 			<Button
-				className="w-full"
+				className="w-full rounded-none"
 				onClick={() => onPageChange("topics")}
 				variant={page === "topics" ? "default" : "ghost"}>
 				<FaList className="h-4 w-4" />
