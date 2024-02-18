@@ -11,19 +11,21 @@ import "~style.css";
 
 function IndexPopup() {
 	const [page, setPage] = useState<"summary" | "topics">("summary");
-
 	return (
 		<div className="font-fredoka pb-32 h-[600px] w-[400px] flex flex-col justify-between">
-			{/* Header */}
-			<div
-				className="flex justify-between items-center px-4 border-b border-white py-2"
-				style={{ fontWeight: 600 }}>
-				<h1 className="text-2xl text-primary">Insight Critter</h1>
-				<img src={logo} alt="Icon" draggable={false} className="h-12 w-12" />
-			</div>
+			<Header />
 			{page == "summary" ? <Summary /> : <Topics />}
-
 			<Footer page={page} onPageChange={setPage} />
+		</div>
+	);
+}
+function Header() {
+	return (
+		<div
+			className="flex justify-between items-center px-4 border-b border-white py-2"
+			style={{ fontWeight: 600 }}>
+			<h1 className="text-2xl text-primary">Insight Critter</h1>
+			<img src={logo} alt="Icon" draggable={false} className="h-12 w-12" />
 		</div>
 	);
 }
