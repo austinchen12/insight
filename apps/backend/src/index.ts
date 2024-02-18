@@ -10,7 +10,7 @@ const EXECUTE_DATABASE_URL =
 	"https://8e0d-68-65-175-49.ngrok-free.app/execute_sql";
 
 function execute(body: { sql: string; params: Record<string, unknown> }) {
-	fetch(EXECUTE_DATABASE_URL, {
+	return fetch(EXECUTE_DATABASE_URL, {
 		method: "POST",
 		body: JSON.stringify(body),
 	});
