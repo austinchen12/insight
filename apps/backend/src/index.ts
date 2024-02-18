@@ -2,7 +2,6 @@ import { swagger } from "@elysiajs/swagger";
 import { compile as c, trpc } from "@elysiajs/trpc";
 import { initTRPC } from "@trpc/server";
 import { Elysia, t as Type } from "elysia";
-
 import { db } from "./db";
 import {
 	SelectArticle,
@@ -15,6 +14,7 @@ import {
 	specificPoints,
 	supersetPoints,
 } from "./db/schema";
+import { eq } from "drizzle-orm";
 
 export type SelectArticleJoinedSpecificPoints = SelectArticle & {
 	specificPoints: SelectSpecificPoint[];
@@ -34,10 +34,28 @@ const t = initTRPC.create();
 const p = t.procedure;
 
 const router = t.router({
-	findSimilarArticles: p
+	getGlobalData: p
 		.input(c(Type.Object({ url: Type.String() })))
-		.query(({ input: { url } }) => {
-			// ...
+		.query(async ({ input: { url } }) => {
+			const thisArticleWithSpecificPoints = await db.query.articles.findFirst({
+				where: eq(articles.url, url),
+				with: {
+					specificPoints: true,
+				},
+			});
+			if (!thisArticleWithSpecificPoints) {
+				throw new Error("Article not found");
+			}
+			const getRelevantArticles = (article: SelectArticle) => {};
+			const relevantArticles = getRelevantArticles(
+				thisArticleWithSpecificPoints
+			);
+			const supersetPoints = await db.query.supersetPoints.findMany();
+			return {
+				thisArticle: thisArticleWithSpecificPoints,
+				relevantArticles,
+				supersetPoints,
+			};
 		}),
 	insertArticles: p.input(c(insertArticles)).mutation(({ input }) => {
 		return db.insert(articles).values(input);
