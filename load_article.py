@@ -84,7 +84,7 @@ def post_article(article):
     try:
         article = { "id": str(uuid.uuid4()), **article }
         payload = {
-            'sql': "INSERT INTO articles (id, title, url, bias, sentiment, embedding) VALUES (:id, :title, :url, :bias, :sentiment, :embedding)",
+            'sql': "INSERT INTO articles (id, title, url, bias, sentiment, embedding) VALUES (:id, :title, :url, :bias, :sentiment, TO_VECTOR(:embedding))",
             'params': article
         }
         response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
@@ -100,7 +100,7 @@ def post_specific_point(point):
     try:
         point = { "id": str(uuid.uuid4()), "superset_point_id": "", **point }
         payload = {
-            "sql": "INSERT INTO specific_points (id, article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:id, :article_id, :original_excerpt, :embedding, :bias, :sentiment, :superset_point_id)",
+            "sql": "INSERT INTO specific_points (id, article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:id, :article_id, :original_excerpt, TO_VECTOR(:embedding), :bias, :sentiment, :superset_point_id)",
             "params": point
         }
         response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
@@ -112,11 +112,29 @@ def post_specific_point(point):
         print('SPECIFIC ERROR: ', str(e))
         exit(1)
 
+def update_with_superset_point(specific_point_id, superset_point_id):
+    try:
+        payload = {
+            "sql": "UPDATE specific_points SET superset_point_id = :superset_point_id WHERE id = :id",
+            "params": {
+                "id": specific_point_id,
+                "superset_point_id": superset_point_id,
+            }
+        }
+        response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
+        if response.status_code != 200:
+            print(f'UPDATE {response.status_code}: ', response.json())
+            exit(1)
+    except Exception as e:
+        print('UPDATE ERROR: ', str(e))
+        exit(1)
+
+
 def post_superset_point(point):
     try:
         point = { "id": str(uuid.uuid4()), **point }
         payload = {
-            "sql": "INSERT INTO superset_points (id, title_generated, embedding) VALUES (:id, :title_generated, :embedding)",
+            "sql": "INSERT INTO superset_points (id, title_generated, embedding) VALUES (:id, :title_generated, TO_VECTOR(:embedding))",
             "params": point
         }
         response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
@@ -184,6 +202,20 @@ def get_cluster_summary(texts):
     summary = response.choices[0].message.content
     return summary
 
+def search_vector(vector):
+    try:
+        payload = {
+            'search_vector': vector,
+        }
+        response = requests.post('http://127.0.0.1:5000/search', json=payload)
+        if response.status_code != 200:
+            print(f'SEARCH {response.status_code}: ', response.json())
+            exit(1)
+        return response.json()
+    except Exception as e:
+        print('SEARCH ERROR: ', str(e))
+        exit(1)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -198,8 +230,8 @@ def main():
         "title": title,
         "url": args.url,
         "bias": article_bias,
-        "sentiment": json.dumps(article_sentiment),
-        "embedding": json.dumps(embed_text(article)),
+        "sentiment": str(article_sentiment),
+        "embedding": str(embed_text(article)),
     }
     article_obj = post_article(article_obj)
     
@@ -226,19 +258,19 @@ def main():
         response_format={ "type": "json_object" }
     )
 
-    topics = response.choices[0].message.content.split('\n')
+    topics = response.choices[0].message.content
+    data_json = json.loads(topics)
+
     specific_points = []
-    for topic in topics:
-        assert len(topic) <= 512
-        specific_points.append({
+    for topic in data_json["topics"][:3]:
+        point = post_specific_point({
             "article_id": article_obj["id"],
             "original_excerpt": topic,
             "bias": detect_bias(topic),
-            "sentiment": json.dumps(detect_sentiment(topic)),
-            "embedding": json.dumps(embed_text(topic)),
+            "sentiment": str(detect_sentiment(topic)),
+            "embedding": str(embed_text(topic)),
         })
-    for point in specific_points:
-        post_specific_point(point)
+        specific_points.append(point)
 
     embeddings = []
     printed_texts = []
@@ -262,6 +294,23 @@ def main():
 
         cluster_summary = get_cluster_summary(original_excerpts)
         cluster_summaries.append(cluster_summary)
+
+    superset_points = {}
+    for i, cluster_summary in enumerate(cluster_summaries):
+        superset_point = post_superset_point({
+            "title_generated": cluster_summary,
+            "embedding": str(embed_text(cluster_summary))
+        })
+        superset_points[i] = superset_point
+
+    for i, grouped_points in enumerate(grouped_points_by_cluster):
+        for point in grouped_points:
+            update_with_superset_point(point['id'], superset_points[i]['id'])
+
+    for specific_point in specific_points:
+        print(specific_point['original_excerpt'])
+        print(search_vector(json.loads(specific_point['embedding'])))
+        print()
 
 if __name__ == '__main__':
     main()

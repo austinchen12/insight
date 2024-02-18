@@ -35,5 +35,26 @@ def execute_sql():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/search', methods=['POST'])
+def search():
+    data = request.json
+    search_vector = data.get('search_vector')
+
+    sql = text("""
+        SELECT *,
+        VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) AS dot_product_result
+        FROM superset_points
+        WHERE VECTOR_DOT_PRODUCT(embedding, TO_VECTOR(:search_vector)) > 0.5
+        ORDER BY dot_product_result DESC
+    """)
+
+    try:
+        with engine.connect() as connection:
+            result = connection.execute(sql, {'search_vector': str(search_vector)}).fetchall()
+            return jsonify({'result': [list(row) for row in result]})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)

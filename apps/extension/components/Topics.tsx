@@ -1,17 +1,11 @@
 import { useState } from "react";
 import { BsFillXCircleFill } from "react-icons/bs";
 import { FaAngleDown, FaAngleUp, FaCheckCircle } from "react-icons/fa";
-import { GoShare } from "react-icons/go";
-import { RadialBar, RadialBarChart } from "recharts";
 
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
 import { PinkProgress, PurpleProgress } from "~/components/ui/progress";
+import { urlToSiteAbbreviation } from "~lib/utils";
+import type { GlobalData, SpecificPoint, SupersetPoint } from "~popup";
 
 import {
 	Card,
@@ -26,34 +20,15 @@ import {
 	CollapsibleTrigger,
 } from "./ui/collapsible";
 
-function Topics() {
-	const numArticles = 12;
+function Topics({ data }: { data: GlobalData }) {
+	const numArticles = data.relevantArticles.length; // + 1?
 
-	const sampleTopics = [
-		{
-			title: "Billions of dollars have been flowing into climate change",
-			included: true,
-			bias: { this: 45, others: 64 },
-			sentiment: { this: 30, others: 65 },
-			sites: [
-				{
-					name: "WSJ",
-					bias: 20,
-					sentiment: 84,
-				},
-				{
-					name: "CNN",
-					bias: 80,
-					sentiment: 82,
-				},
-				{
-					name: "New York Times",
-					bias: 20,
-					sentiment: 32,
-				},
-			],
-		},
-	];
+	// Should memoize this
+	const numTopics = data.supersetPoints.length;
+
+	let moreBiased = 0;
+
+	// TODO: num more and less biased than avg
 
 	return (
 		<div className="flex flex-col gap-2 px-3 py-2">
@@ -62,34 +37,34 @@ function Topics() {
 					Topics
 				</h2>
 				<p>
-					{sampleTopics.length} {sampleTopics.length > 1 ? "topics" : "topic"}{" "}
-					across {numArticles} articles
+					{numTopics} {numTopics > 1 ? "topics" : "topic"} across {numArticles}{" "}
+					articles
 				</p>
 			</div>
 
 			{/* Topics overview */}
 			<div className="flex gap-2">
 				<TopicOverviewNote
-					stat1={1}
-					stat2={sampleTopics.length}
+					stat1={data.thisArticle.specificPoints.length}
+					stat2={numTopics}
 					title="Topics included vs. total"
 				/>
 				<TopicOverviewNote
 					stat1={0}
-					stat2={sampleTopics.length}
+					stat2={numTopics}
 					title="More biased than the avg"
 				/>
 
 				<TopicOverviewNote
 					stat1={0}
-					stat2={sampleTopics.length}
+					stat2={numTopics}
 					title="More negative than the avg"
 				/>
 			</div>
 
 			{/* Topic cards */}
-			{sampleTopics.map((topic, idx) => (
-				<TopicCard topic={topic} key={idx} />
+			{data.supersetPoints.map((supersetPoint, idx) => (
+				<TopicCard data={data} supersetPoint={supersetPoint} key={idx} />
 			))}
 		</div>
 	);
@@ -110,15 +85,54 @@ function TopicOverviewNote({ stat1, stat2, title }) {
 	);
 }
 
-function TopicCard({ topic }) {
+function TopicCard({
+	data,
+	supersetPoint,
+}: {
+	data: GlobalData;
+	supersetPoint: SupersetPoint;
+}) {
 	const [showBreakdown, setShowBreakdown] = useState(false);
+
+	let included = false;
+	let connectedPoint: SpecificPoint | null = null;
+	for (const specificPoint of data.thisArticle.specificPoints) {
+		if (specificPoint.superset_point_id == supersetPoint.id) {
+			included = true;
+			connectedPoint = specificPoint;
+			break;
+		}
+	}
+
+	const connectedRelatedPoints: SpecificPoint[] = [];
+	for (const relevantArticle of data.relevantArticles) {
+		const connectedPoints = relevantArticle.specificPoints.filter(
+			(point) => point.superset_point_id == supersetPoint.id
+		);
+		connectedRelatedPoints.push(...connectedPoints);
+	}
+
+	let avgRelatedBias = 0;
+	for (const connectedPoint of connectedRelatedPoints) {
+		avgRelatedBias += connectedPoint.bias.biased;
+	}
+	avgRelatedBias = (avgRelatedBias * 100) / connectedRelatedPoints.length;
+
+	let avgRelatedPositive = 0;
+	for (const connectedPoint of connectedRelatedPoints) {
+		avgRelatedPositive += connectedPoint.sentiment.POS;
+	}
+	avgRelatedPositive =
+		(avgRelatedPositive * 100) / connectedRelatedPoints.length;
 
 	return (
 		<Card className="w-full">
 			<CardHeader>
-				<CardTitle className="text-sm">{topic.title}</CardTitle>
+				<CardTitle className="text-sm">
+					{supersetPoint.title_generated}
+				</CardTitle>
 				<CardDescription>
-					{topic.included ? (
+					{included ? (
 						<div className="flex gap-1 items-center text-primary/75">
 							<FaCheckCircle className="text-primary/75" />
 							<p>This article includes this topic</p>
@@ -132,20 +146,24 @@ function TopicCard({ topic }) {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<StatsRow
-					title="This article"
-					stat1Title="biased"
-					stat1Val={topic.bias.this}
-					stat2Title="positive"
-					stat2Val={topic.sentiment.this}
-				/>
-				<StatsRow
-					title="Related articles"
-					stat1Title="biased"
-					stat1Val={topic.bias.others}
-					stat2Title="positive"
-					stat2Val={topic.sentiment.others}
-				/>
+				{connectedPoint && (
+					<>
+						<StatsRow
+							title="This article"
+							stat1Title="biased"
+							stat1Val={connectedPoint.bias.biased * 100}
+							stat2Title="positive"
+							stat2Val={connectedPoint.sentiment.POS * 100}
+						/>
+						<StatsRow
+							title="Related articles"
+							stat1Title="biased"
+							stat1Val={avgRelatedBias}
+							stat2Title="positive"
+							stat2Val={avgRelatedPositive}
+						/>
+					</>
+				)}
 
 				<Collapsible open={showBreakdown} onOpenChange={setShowBreakdown}>
 					<CollapsibleTrigger asChild>
@@ -160,14 +178,14 @@ function TopicCard({ topic }) {
 					</CollapsibleTrigger>
 					<CollapsibleContent>
 						<div className="border-t border-dark mt-1 pt-1">
-							{topic.sites.map((site, idx) => (
+							{data.relevantArticles.map((relevantArticle, idx) => (
 								<StatsRow
 									key={idx}
-									title={site.name}
+									title={urlToSiteAbbreviation(relevantArticle.url)}
 									stat1Title="biased"
-									stat1Val={site.bias}
+									stat1Val={relevantArticle.bias * 100}
 									stat2Title="positive"
-									stat2Val={site.sentiment}
+									stat2Val={relevantArticle.sentiment.POS * 100}
 								/>
 							))}
 						</div>
