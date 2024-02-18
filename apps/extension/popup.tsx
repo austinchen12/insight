@@ -65,8 +65,6 @@ function IndexPopup() {
 
 	return (
 		<Layout>
-			{error}
-			{isLoading}
 			{error ? (
 				<div className="flex items-center justify-center">
 					<p>Error: {error.message}</p>
