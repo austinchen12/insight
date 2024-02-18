@@ -1,13 +1,9 @@
-import { Elysia, t } from "elysia";
 import { swagger } from "@elysiajs/swagger";
-import { db } from "./db";
+import { Elysia, t } from "elysia";
 import {
-	articles,
 	insertArticles,
 	insertSpecificPoints,
 	insertSupersetPoints,
-	specificPoints,
-	supersetPoints,
 } from "./db/schema";
 
 const EXECUTE_DATABASE_URL =
@@ -78,31 +74,47 @@ const app = new Elysia()
 	)
 	.post(
 		"/articles",
-		async ({ body }) => {
-			await db.insert(articles).values(body);
+		({ body }) => {
+			return execute({
+				sql: "INSERT INTO articles (title, url, bias, sentiment, embedding) VALUES (:title, :url, :bias, :sentiment, :embedding)",
+				params: body,
+			});
+			// await db.insert(articles).values(body);
 		},
 		{ body: insertArticles }
 	)
 	.post(
 		"/specific_points",
-		async ({ body }) => {
-			await db.insert(specificPoints).values(body);
+		({ body }) => {
+			return execute({
+				sql: "INSERT INTO specific_points (article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:article_id, :original_excerpt, :embedding, :bias, :sentiment, :superset_point_id)",
+				params: body,
+			});
+			// await db.insert(specificPoints).values(body);
 		},
 		{ body: insertSpecificPoints }
 	)
 	.put(
 		"/specific_points",
-		async ({ body }) => {
-			await db.update(specificPoints).set({
-				superset_point_id: body.superset_point_id,
+		({ body }) => {
+			return execute({
+				sql: "UPDATE specific_points SET superset_point_id = :superset_point_id",
+				params: body,
 			});
+			// await db.update(specificPoints).set({
+			// 	superset_point_id: body.superset_point_id,
+			// });
 		},
 		{ body: t.Pick(insertSpecificPoints, ["superset_point_id"]) }
 	)
 	.post(
 		"/superset_points",
-		async ({ body }) => {
-			await db.insert(supersetPoints).values(body);
+		({ body }) => {
+			return execute({
+				sql: "INSERT INTO superset_points (title_generated, embedding) VALUES (:title_generated, :embedding)",
+				params: body,
+			});
+			// await db.insert(supersetPoints).values(body);
 		},
 		{ body: insertSupersetPoints }
 	)
