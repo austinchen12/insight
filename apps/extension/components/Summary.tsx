@@ -190,9 +190,11 @@ function Summary() {
 				Scanned Articles
 			</h2>
 
-			{sampleArticles.map((article, idx) => (
-				<ScannedArticle article={article} key={idx} />
-			))}
+			<div className="flex flex-col gap-2">
+				{sampleArticles.map((article, idx) => (
+					<ScannedArticle article={article} key={idx} />
+				))}
+			</div>
 		</div>
 	);
 }
