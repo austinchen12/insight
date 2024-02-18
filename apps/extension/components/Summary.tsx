@@ -204,9 +204,7 @@ function ScannedArticle({ article }) {
 	};
 
 	return (
-		<button
-			className="bg-content-box w-full hover:cursor-pointer px-2 py-1 rounded-lg border border-[#A0CA21] hover:opacity-80 mb-1"
-			onClick={openArticle}>
+		<Card className="hover:cursor-pointer w-full hover:opacity-80" onClick={openArticle}>
 			<h3 className="text-[#606060] text-sm">{article.title}</h3>
 			<div className="flex gap-3 text-[#8DB613] text-xs">
 				<p>
@@ -214,7 +212,7 @@ function ScannedArticle({ article }) {
 					positive
 				</p>
 			</div>
-		</button>
+		</Card>
 	);
 }
 
