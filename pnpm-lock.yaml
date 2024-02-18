@@ -17,6 +17,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@elysiajs/cors':
+        specifier: ^0.8.0
+        version: 0.8.0(elysia@0.8.17)
       '@elysiajs/swagger':
         specifier: ^0.8.5
         version: 0.8.5(elysia@0.8.17)
@@ -72,9 +75,6 @@ importers:
       '@repo/backend':
         specifier: workspace:*
         version: link:../backend
-      '@tanstack/react-query':
-        specifier: ^5.21.7
-        version: 5.21.7(react@18.2.0)
       axios:
         specifier: ^1.6.7
         version: 1.6.7
@@ -332,6 +332,14 @@ packages:
     dependencies:
       superjson: 2.2.1
     dev: true
+
+  /@elysiajs/cors@0.8.0(elysia@0.8.17):
+    resolution: {integrity: sha512-NADcOsokALRv4nljA5DYJPJdIJ7iwq+ouV5lH5W+hLgZRMYsfbKShg82QSmxd7BJQFuGSv2dIIF2dfG9ieUyng==}
+    peerDependencies:
+      elysia: '>= 0.8.0'
+    dependencies:
+      elysia: 0.8.17(@sinclair/typebox@0.32.14)(typescript@5.3.3)
+    dev: false
 
   /@elysiajs/eden@0.8.1(elysia@0.8.17):
     resolution: {integrity: sha512-YzvcIANyzdxWqaXBYjVN/Y9hqaIDQwF3jc7rUMqVLVo+zOd3eTn8zruNEWcumA6n+rJujqqMYanrOD3pUolOtg==}
@@ -3320,19 +3328,6 @@ packages:
     engines: {node: '>=14.16'}
     dependencies:
       defer-to-connect: 2.0.1
-    dev: false
-
-  /@tanstack/query-core@5.21.7:
-    resolution: {integrity: sha512-z0NSWFsM75esVmkxeuDWeyo9Wv4CZ/WsLMZgu1Zz164S6Oc/57NMia88dTu/d51wdVowMTAcDMQgRmiWmyPMxQ==}
-    dev: false
-
-  /@tanstack/react-query@5.21.7(react@18.2.0):
-    resolution: {integrity: sha512-Op9nVL/L0Lg+aSPFSGbrymu6d3tzUoZ+FZ+rRIZpu5HkGasflqzhsXkL26Sa+MEwLyox7Q1erSFwNIRO3TYjXQ==}
-    peerDependencies:
-      react: ^18.0.0
-    dependencies:
-      '@tanstack/query-core': 5.21.7
-      react: 18.2.0
     dev: false
 
   /@trysound/sax@0.2.0:
