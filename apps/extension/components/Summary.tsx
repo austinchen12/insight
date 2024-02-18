@@ -143,7 +143,7 @@ function Summary() {
 
 			<div className="flex justify-between items-center gap-2">
 				{/* Bias */}
-				<Card className="w-full flex flex-col items-center">
+				<Card className="w-full flex flex-col items-center gap-1">
 					<RadialBarChart
 						width={100}
 						height={100}
@@ -154,10 +154,7 @@ function Summary() {
 					>
 						<RadialBar dataKey="x" background />
 					</RadialBarChart>
-
-					<p className="text-lg text-dark -mt-4" style={{ fontWeight: 500 }}>
-						Bias
-					</p>
+					<p className="-mt-3 text-lg font-semibold">Bias</p>
 					<div className="flex gap-2 items-center">
 						<div className="h-2 w-2 bg-purple" />
 						<div>This article</div>
@@ -169,7 +166,7 @@ function Summary() {
 				</Card>
 
 				{/* Sentiment */}
-				<Card className="w-full flex flex-col items-center">
+				<Card className="w-full flex flex-col items-center gap-1">
 					<RadialBarChart
 						width={100}
 						height={100}
@@ -177,10 +174,7 @@ function Summary() {
 						margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
 						<RadialBar dataKey="x" background />
 					</RadialBarChart>
-
-					<p className="text-lg text-dark -mt-4" style={{ fontWeight: 500 }}>
-						Sentiment
-					</p>
+					<p className="-mt-3 text-lg font-semibold">Sentiment</p>
 					<div className="flex gap-2 items-center">
 						<div className="h-2 w-2 bg-orange" />
 						<div>This article</div>
