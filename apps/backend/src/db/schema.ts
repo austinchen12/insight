@@ -1,5 +1,6 @@
+import { InferSelectModel } from "drizzle-orm";
 import { real, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createInsertSchema } from "drizzle-typebox";
+import { createSelectSchema, createInsertSchema } from "drizzle-typebox";
 import { Static, t } from "elysia";
 import { customAlphabet } from "nanoid";
 
@@ -23,6 +24,10 @@ export const articles = sqliteTable("articles", {
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
 
+export const selectArticlesSchema = createSelectSchema(articles, {
+	sentiment: sentimentSchema,
+});
+export type SelectArticle = InferSelectModel<typeof articles>;
 export const insertArticles = createInsertSchema(articles, {
 	sentiment: sentimentSchema,
 });
@@ -38,6 +43,11 @@ export const specificPoints = sqliteTable("specific_points", {
 	superset_point_id: text("superset_point_id"),
 });
 
+export type SelectSpecificPoint = InferSelectModel<typeof specificPoints>;
+
+export const selectSpecificPointsSchema = createSelectSchema(specificPoints, {
+	sentiment: sentimentSchema,
+});
 export const insertSpecificPoints = createInsertSchema(specificPoints, {
 	sentiment: sentimentSchema,
 });
@@ -49,4 +59,6 @@ export const supersetPoints = sqliteTable("superset_points", {
 	embedding: text("embedding", { mode: "json" }).notNull(),
 });
 
-export const insertSupersetPoints = createInsertSchema(supersetPoints);
+export type SelectSupersetPoint = InferSelectModel<typeof supersetPoints>;
+export const selectSupersetPointsSchema = createSelectSchema(supersetPoints);
+export const insertSupersetPointsSchema = createInsertSchema(supersetPoints);

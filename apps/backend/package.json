@@ -11,6 +11,7 @@
 	"dependencies": {
 		"@elysiajs/swagger": "^0.8.5",
 		"@libsql/client": "^0.5.0",
+		"@sinclair/typebox": "^0.32.14",
 		"drizzle-orm": "^0.29.3",
 		"drizzle-typebox": "^0.1.1",
 		"elysia": "latest",
