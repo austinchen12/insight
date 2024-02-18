@@ -12,9 +12,9 @@ import "~style.css";
 function IndexPopup() {
 	const [page, setPage] = useState<"summary" | "topics">("summary");
 	return (
-		<div className="font-fredoka h-[600px] w-[400px] flex flex-col justify-between">
+		<div className="font-fredoka h-[600px] w-[400px] flex flex-col">
 			<Header />
-			<div className="h-full pb-16">
+			<div className="pb-16">
 				{page == "summary" ? <Summary /> : <Topics />}
 			</div>
 			<Footer page={page} onPageChange={setPage} />
@@ -23,9 +23,7 @@ function IndexPopup() {
 }
 function Header() {
 	return (
-		<div
-			className="flex justify-between items-center px-4 border-b border-white py-2"
-			style={{ fontWeight: 600 }}>
+		<div className="flex justify-between items-center px-4 border-b border-white py-2 font-bold">
 			<h1 className="text-2xl text-primary">Insight Critter</h1>
 			<img src={logo} alt="Icon" draggable={false} className="h-12 w-12" />
 		</div>
