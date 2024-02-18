@@ -4,6 +4,8 @@ import { RadialBar, RadialBarChart } from "recharts";
 
 import { Button } from "~/components/ui/button";
 
+import { Card } from "./ui/card";
+
 function Summary() {
 	// Sample data
 	const biasData = [
@@ -135,19 +137,17 @@ function Summary() {
 
 			<div className="flex justify-between items-center mt-2">
 				{/* Bias */}
-				<div className="bg-content-box h-36 w-full rounded-lg border border-dark-green flex flex-col items-center mr-2">
-					<div className="flex items-center justify-center -mt-2">
-						<RadialBarChart
-							width={100}
-							height={100}
-							data={biasData}
-							// innerRadius="40%"
-							margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-							// outerRadius="100%"
-						>
-							<RadialBar dataKey="x" background />
-						</RadialBarChart>
-					</div>
+				<Card className="h-36 w-full flex flex-col items-center">
+					<RadialBarChart
+						width={100}
+						height={100}
+						data={biasData}
+						// innerRadius="40%"
+						margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+						// outerRadius="100%"
+					>
+						<RadialBar dataKey="x" background />
+					</RadialBarChart>
 
 					<p className="text-lg text-dark -mt-4" style={{ fontWeight: 500 }}>
 						Bias
@@ -160,19 +160,17 @@ function Summary() {
 						<div className="h-2 w-2 bg-blue" />
 						<div>Related articles</div>
 					</div>
-				</div>
+				</Card>
 
 				{/* Sentiment */}
-				<div className="bg-content-box h-36 w-full rounded-lg border border-dark-green flex flex-col items-center ml-2">
-					<div className="flex items-center justify-center -mt-2">
-						<RadialBarChart
-							width={100}
-							height={100}
-							data={sentimentData}
-							margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-							<RadialBar dataKey="x" background />
-						</RadialBarChart>
-					</div>
+				<Card className="h-36 w-full flex flex-col items-center">
+					<RadialBarChart
+						width={100}
+						height={100}
+						data={sentimentData}
+						margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+						<RadialBar dataKey="x" background />
+					</RadialBarChart>
 
 					<p className="text-lg text-dark -mt-4" style={{ fontWeight: 500 }}>
 						Sentiment
@@ -185,7 +183,7 @@ function Summary() {
 						<div className="h-2 w-2 bg-pink" />
 						<div>Related articles</div>
 					</div>
-				</div>
+				</Card>
 			</div>
 
 			<h2 className="text-lg text-dark mt-2" style={{ fontWeight: 400 }}>
