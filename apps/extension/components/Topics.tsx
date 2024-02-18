@@ -110,10 +110,9 @@ function TopicCard({
 
 	const connectedRelatedPoints: SelectSpecificPoint[] = [];
 	for (const relevantArticle of data.relevantArticles) {
-		const connectedPoints = [];
-		// const connectedPoints = relevantArticle.specificPoints.filter(
-		// 	(point) => point.superset_point_id == supersetPoint.id
-		// );
+		const connectedPoints = (relevantArticle.specificPoints ?? []).filter(
+			(point) => point.superset_point_id == supersetPoint.id
+		);
 		connectedRelatedPoints.push(...connectedPoints);
 	}
 
