@@ -156,13 +156,15 @@ function Summary() {
 							<RadialBar dataKey="x" background />
 						</RadialBarChart>
 						<p className="-mt-3 text-lg font-semibold">Bias</p>
-						<div className="flex gap-2 items-center">
-							<div className="h-2 w-2 bg-purple" />
-							<div>This article</div>
-						</div>
-						<div className="flex gap-2 items-center">
-							<div className="h-2 w-2 bg-blue" />
-							<div>Related articles</div>
+						<div>
+							<div className="flex gap-2 items-center">
+								<div className="h-2 w-2 bg-purple" />
+								<div>This article</div>
+							</div>
+							<div className="flex gap-2 items-center">
+								<div className="h-2 w-2 bg-blue" />
+								<div>Related articles</div>
+							</div>
 						</div>
 					</CardContent>
 				</Card>
@@ -178,13 +180,15 @@ function Summary() {
 							<RadialBar dataKey="x" background />
 						</RadialBarChart>
 						<p className="-mt-3 text-lg font-semibold">Sentiment</p>
-						<div className="flex gap-2 items-center">
-							<div className="h-2 w-2 bg-orange" />
-							<div>This article</div>
-						</div>
-						<div className="flex gap-2 items-center">
-							<div className="h-2 w-2 bg-pink" />
-							<div>Related articles</div>
+						<div>
+							<div className="flex gap-2 items-center">
+								<div className="h-2 w-2 bg-orange" />
+								<div>This article</div>
+							</div>
+							<div className="flex gap-2 items-center">
+								<div className="h-2 w-2 bg-pink" />
+								<div>Related articles</div>
+							</div>
 						</div>
 					</CardContent>
 				</Card>
