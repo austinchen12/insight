@@ -1,10 +1,9 @@
-import { cors } from "@elysiajs/cors";
-import { initTRPC } from "@trpc/server";
 import { swagger } from "@elysiajs/swagger";
-import { TypeCompiler } from "@sinclair/typebox/compiler";
-import { Elysia, Static, TSchema, t as Type } from "elysia";
 import { compile as c, trpc } from "@elysiajs/trpc";
+import { initTRPC } from "@trpc/server";
+import { Elysia, t as Type } from "elysia";
 
+import { db } from "./db";
 import {
 	SelectArticle,
 	SelectSpecificPoint,
@@ -13,14 +12,9 @@ import {
 	insertArticles,
 	insertSpecificPoints,
 	insertSupersetPointsSchema,
-	nanoid,
-	selectArticlesSchema,
-	selectSpecificPointsSchema,
-	selectSupersetPointsSchema,
 	specificPoints,
 	supersetPoints,
 } from "./db/schema";
-import { db } from "./db";
 
 export type SelectArticleJoinedSpecificPoints = SelectArticle & {
 	specificPoints: SelectSpecificPoint[];
