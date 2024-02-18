@@ -76,7 +76,7 @@ const app = new Elysia()
 		"/articles",
 		({ body }) => {
 			return execute({
-				sql: "INSERT INTO articles (title, url, bias, sentiment, embedding) VALUES (:title, :url, :bias, :sentiment, :embedding)",
+				sql: "INSERT INTO articles (id, title, url, bias, sentiment, embedding) VALUES (:id, :title, :url, :bias, :sentiment, :embedding)",
 				params: body,
 			});
 			// await db.insert(articles).values(body);
@@ -87,7 +87,7 @@ const app = new Elysia()
 		"/specific_points",
 		({ body }) => {
 			return execute({
-				sql: "INSERT INTO specific_points (article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:article_id, :original_excerpt, :embedding, :bias, :sentiment, :superset_point_id)",
+				sql: "INSERT INTO specific_points (id, article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:id, :article_id, :original_excerpt, :embedding, :bias, :sentiment, :superset_point_id)",
 				params: body,
 			});
 			// await db.insert(specificPoints).values(body);
@@ -111,7 +111,7 @@ const app = new Elysia()
 		"/superset_points",
 		({ body }) => {
 			return execute({
-				sql: "INSERT INTO superset_points (title_generated, embedding) VALUES (:title_generated, :embedding)",
+				sql: "INSERT INTO superset_points (id, title_generated, embedding) VALUES (:id, :title_generated, :embedding)",
 				params: body,
 			});
 			// await db.insert(supersetPoints).values(body);
