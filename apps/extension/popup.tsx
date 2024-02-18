@@ -9,6 +9,7 @@ import { Button } from "~components/ui/button";
 
 import "~style.css";
 
+import { Skeleton } from "~components/ui/skeleton";
 import { app } from "~lib/eden";
 
 import type { GlobalData } from "../backend/src";
@@ -70,7 +71,7 @@ function IndexPopup() {
 					<p>Error: {error.message}</p>
 				</div>
 			) : isLoading ? (
-				<div className="flex items-center justify-center">Loading...</div>
+				<SkeletonLoaders />
 			) : (
 				<div className="pb-16">
 					{page == "summary" ? <Summary data={data} /> : <Topics data={data} />}
@@ -80,6 +81,33 @@ function IndexPopup() {
 		</Layout>
 	);
 }
+
+function SkeletonLoaders() {
+	return (
+		<div className="flex flex-col gap-2 px-3 py-2 ">
+			<div className="flex justify-between items-center">
+				<h2 className="scroll-m-20 text-2xl font-medium tracking-tight">
+					Summary
+				</h2>
+				<Skeleton className="h-10 w-20" />
+			</div>
+
+			<div className="flex justify-between items-center gap-2">
+				<Skeleton className="h-48 w-48" />
+				<Skeleton className="h-48 w-48" />
+			</div>
+
+			<h2 className="scroll-m-20 text-2xl font-medium tracking-tight">
+				Scanned Articles
+			</h2>
+
+			<div className="flex flex-col gap-2">
+				<Skeleton className="h-24 w-full" />
+			</div>
+		</div>
+	);
+}
+
 function Header() {
 	return (
 		<div className="flex justify-between items-center px-4 border-b border-white py-2 font-bold">
