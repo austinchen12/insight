@@ -29,7 +29,7 @@ def execute_sql():
             result = connection.execute(text(sql), params)
             connection.commit()
             if result.returns_rows:
-                return jsonify({'result': [list(row) for row in result.all()]})
+                return jsonify({'result': [{key: value for key, value in row.items()} for row in result.mappings()]})
             else:
                 return jsonify({'result': f'{result.rowcount} row(s) affected.'})
     except Exception as e:
