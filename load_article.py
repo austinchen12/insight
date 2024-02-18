@@ -1,6 +1,8 @@
 import argparse
 import json
 import uuid
+import json
+import uuid
 import requests
 from openai import OpenAI
 import os
@@ -73,55 +75,6 @@ def detect_sentiment(input):
 def embed_text(text):
     return model.encode(text, normalize_embeddings=True).tolist()
 
-
-def post_article(article):
-    try:
-        article = { "id": str(uuid.uuid4()), **article }
-        payload = {
-            'sql': "INSERT INTO articles (id, title, url, bias, sentiment, embedding) VALUES (:id, :title, :url, :bias, :sentiment, :embedding)",
-            'params': article
-        }
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
-        if response.status_code != 200:
-            print(f'ARTICLE {response.status_code}: ', response.json())
-            exit(1)
-        return article
-    except Exception as e:
-        print('ARTICLE ERROR: ', str(e))
-        exit(1)
-
-def post_specific_point(point):
-    try:
-        point = { "id": str(uuid.uuid4()), "superset_point_id": "", **point }
-        payload = {
-            "sql": "INSERT INTO specific_points (id, article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:id, :article_id, :original_excerpt, :embedding, :bias, :sentiment, :superset_point_id)",
-            "params": point
-        }
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
-        if response.status_code != 200:
-            print(f'SPECIFIC {response.status_code}: ', response.json())
-            exit(1)
-        return point
-    except Exception as e:
-        print('SPECIFIC ERROR: ', str(e))
-        exit(1)
-
-def post_superset_point(point):
-    try:
-        point = { "id": str(uuid.uuid4()), **point }
-        payload = {
-            "sql": "INSERT INTO superset_points (id, title_generated, embedding) VALUES (:id, :title_generated, :embedding)",
-            "params": point
-        }
-        response = requests.post('http://127.0.0.1:5000/execute_sql', json=payload)
-        if response.status_code != 200:
-            print(f'SUPERSET {response.status_code}: ', response.json())
-            exit(1)
-        return point
-    except Exception as e:
-        print('SUPERSET ERROR: ', e.message)
-        exit(1)
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('url', help='The article to load')
@@ -132,13 +85,14 @@ def main():
     article_sentiment = detect_sentiment(article[:512])
 
     article_obj = {
+        "id": str(uuid.uuid4()),
         "title": title,
         "url": args.url,
         "bias": article_bias,
-        "sentiment": json.dumps(article_sentiment),
-        "embedding": json.dumps(embed_text(article)),
+        "sentiment": article_sentiment,
+        "embeddings": embed_text(article)
     }
-    article_obj = post_article(article_obj)
+    print(article_obj)
     
     response = client.chat.completions.create(
         messages=[
@@ -156,14 +110,14 @@ def main():
 
     topics = response.choices[0].message.content.split('\n')
     specific_points = []
-    for topic in [topics[0]]:
+    for topic in topics:
         assert len(topic) <= 512
         specific_points.append({
             "article_id": article_obj["id"],
             "original_excerpt": topic,
             "bias": detect_bias(topic),
-            "sentiment": json.dumps(detect_sentiment(topic)),
-            "embedding": json.dumps(embed_text(topic)),
+            "sentiment": detect_sentiment(topic),
+            "embeddings": embed_text(topic)
         })
     for point in specific_points:
         post_specific_point(point)

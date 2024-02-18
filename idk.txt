@@ -1,0 +1,24 @@
+filename:  articles/https:__www.cnn.com_2024_02_16_us_kansas-city-chiefs-rally-shooting-saturday_index.html
+topic Mourning after a mass shooting at Chiefs Super Bowl victory rally
+topic More than 20 injured including children
+topic Investigation ongoing on how violence unfolded
+topic Authorities: Two teenagers to face charges
+topic Deadly shooting on west side of Union Station
+topic Frightened Chiefs fans running for cover
+topic Joyous afternoon turned into panic and fear
+topic Chiefs embracing community with emergency funds
+topic Investigators recovering multiple guns from scene
+topic Analyzing bullets to determine responsible gun
+topic 48th mass shooting in the United States this year
+topic Second time gunfire at US sports title celebration 
+topic Shooting stemmed from dispute, no terrorism connection
+topic 43-year-old woman killed, several kids hurt
+topic Woman killed was DJ and devoted Chiefs fan
+topic 23 others injured, almost half children
+topic Children's Mercy Hospital received 12 patients
+topic Two teens face charges connected to shooting
+topic Chiefs and United Way launched emergency response fund
+topic $200,000 contributed to the emergency fund
+topic Patrick Mahomes and wife visited injured sisters
+topic Taylor Swift made $50,000 donation for Lopez-Galvan's family.
+SPECIFIC ERROR:  'embeddings'
