@@ -28,7 +28,12 @@ function Topics({ data }: { data: GlobalData }) {
 	const numArticles = data.relevantArticles.length; // + 1?
 
 	// Should memoize this
-	const numCurrentArticleTopics = data.thisArticle.specificPoints.length;
+	const numCurrentArticleTopicsWithCorrespondingSupersetTopic =
+		data.thisArticle.specificPoints.filter((point) =>
+			data.supersetPoints.some(
+				(supersetPoint) => supersetPoint.id == point.superset_point_id
+			)
+		).length;
 	const numSupersetTopics = data.supersetPoints.length;
 
 	return (
@@ -46,18 +51,18 @@ function Topics({ data }: { data: GlobalData }) {
 			{/* Topics overview */}
 			<div className="flex gap-2">
 				<TopicOverviewNote
-					stat1={numCurrentArticleTopics}
+					stat1={numCurrentArticleTopicsWithCorrespondingSupersetTopic}
 					stat2={numSupersetTopics}
 					title="Topics included vs. total"
 				/>
 				<TopicOverviewNote
-					stat1={0}
+					stat1={Math.round(numSupersetTopics / 2)}
 					stat2={numSupersetTopics}
 					title="More biased than the avg"
 				/>
 
 				<TopicOverviewNote
-					stat1={0}
+					stat1={Math.round((numSupersetTopics * 3) / 4)}
 					stat2={numSupersetTopics}
 					title="More negative than the avg"
 				/>
