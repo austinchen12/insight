@@ -36,7 +36,7 @@ const p = t.procedure;
 const router = t.router({
 	getGlobalData: p
 		.input(c(Type.Object({ url: Type.String() })))
-		.query(async ({ input: { url } }) => {
+		.query(async ({ input: { url } }): Promise<GlobalData> => {
 			const thisArticleWithSpecificPoints = await db.query.articles.findFirst({
 				where: eq(articles.url, url),
 				with: {
