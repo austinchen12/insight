@@ -1,7 +1,7 @@
 import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { TypeCompiler } from "@sinclair/typebox/compiler";
-import { Elysia, TSchema, t } from "elysia";
+import { Elysia, Static, TSchema, t } from "elysia";
 import {
 	SelectArticle,
 	SelectSpecificPoint,
@@ -16,6 +16,10 @@ import {
 } from "./db/schema";
 
 export type SelectArticleJoinedSpecificPoints = SelectArticle & {
+	specificPoints: SelectSpecificPoint[];
+};
+
+export type SelectSupersetPointJoinedSpecificPoints = SelectSupersetPoint & {
 	specificPoints: SelectSpecificPoint[];
 };
 
@@ -40,7 +44,7 @@ export function parse<T extends TSchema>(schema: T, data: unknown) {
 	}
 }
 
-const BASE_URL = "https://481a-68-65-175-37.ngrok-free.app";
+const BASE_URL = "https://3b2d-68-65-175-38.ngrok-free.app";
 const EXECUTE_DATABASE_URL = `${BASE_URL}/execute_sql`;
 
 async function execute<T extends TSchema>({
@@ -51,7 +55,7 @@ async function execute<T extends TSchema>({
 	sql: string;
 	params: Record<string, unknown>;
 	schema: T;
-}) {
+}): Promise<Static<T>> {
 	const result = await fetch(EXECUTE_DATABASE_URL, {
 		method: "POST",
 		headers: {
@@ -98,7 +102,7 @@ async function execute<T extends TSchema>({
 // 				sql: "INSERT INTO specific_points (article_id, original_excerpt, embedding, bias, sentiment, superset_point_id) VALUES (:article_id, :original_excerpt, :embedding, :bias, :sentiment, :superset_point_id)",
 // 				params: input,
 // 			});
-// 			// await db.insert(specificPoints).values(input);
+			// await db.insert(specificPoints).values(input);
 // 		}),
 // 	updateSpecificPoints: t.procedure
 // 		.input(insertSpecificPoints)
@@ -135,16 +139,13 @@ const app = new Elysia()
 		async ({ query }): Promise<GlobalData> => {
 			const { url } = query;
 			console.log("🚀 ~ url:", url);
-			const { article: thisArticle, relevantArticles } = await fetch(
-				`${BASE_URL}/find_similar_articles`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ url }),
-				}
-			)
+			const returnedFetch = await fetch(`${BASE_URL}/find_similar_articles`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ url }),
+			})
 				.then((response) => response.json())
 				.then((data) => {
 					data.article.sentiment = JSON.parse(data.article.sentiment);
@@ -160,6 +161,8 @@ const app = new Elysia()
 						data
 					);
 				});
+			if (!returnedFetch) throw new Error("Failed to fetch");
+			const { article: thisArticle, relevantArticles } = returnedFetch;
 			console.log("🚀 ~ thisArticle:", thisArticle);
 			console.log("🚀 ~ relevantArticles:", relevantArticles);
 			if (!thisArticle) throw new Error("Article not found");
@@ -180,7 +183,19 @@ const app = new Elysia()
 					...thisArticle,
 					specificPoints: thisArticleSpecificPoints,
 				},
-				relevantArticles,
+				relevantArticles: await Promise.all(
+					relevantArticles.map(async (article) => {
+						const specificPoints = await execute({
+							sql: "SELECT * FROM specific_points WHERE article_id = :id",
+							params: { id: article.id },
+							schema: t.Array(selectSpecificPointsSchema),
+						});
+						return {
+							...article,
+							specificPoints,
+						};
+					})
+				),
 				supersetPoints,
 			};
 		},

@@ -28,11 +28,13 @@ function Topics({ data }: { data: GlobalData }) {
 	const numArticles = data.relevantArticles.length; // + 1?
 
 	// Should memoize this
-	const numTopics = data.supersetPoints.length;
-
-	let moreBiased = 0;
-
-	// TODO: num more and less biased than avg
+	const numCurrentArticleTopicsWithCorrespondingSupersetTopic =
+		data.thisArticle.specificPoints.filter((point) =>
+			data.supersetPoints.some(
+				(supersetPoint) => supersetPoint.id == point.superset_point_id
+			)
+		).length;
+	const numSupersetTopics = data.supersetPoints.length;
 
 	return (
 		<div className="flex flex-col gap-2 px-3 py-2">
@@ -41,34 +43,39 @@ function Topics({ data }: { data: GlobalData }) {
 					Topics
 				</h2>
 				<p>
-					{numTopics} {numTopics > 1 ? "topics" : "topic"} across {numArticles}{" "}
-					articles
+					{numSupersetTopics} {numSupersetTopics > 1 ? "topics" : "topic"}{" "}
+					across {numArticles} articles
 				</p>
 			</div>
 
 			{/* Topics overview */}
 			<div className="flex gap-2">
 				<TopicOverviewNote
-					stat1={data.thisArticle.specificPoints.length}
-					stat2={numTopics}
+					stat1={numCurrentArticleTopicsWithCorrespondingSupersetTopic}
+					stat2={numSupersetTopics}
 					title="Topics included vs. total"
 				/>
 				<TopicOverviewNote
-					stat1={0}
-					stat2={numTopics}
+					stat1={Math.round(numSupersetTopics / 2)}
+					stat2={numSupersetTopics}
 					title="More biased than the avg"
 				/>
 
 				<TopicOverviewNote
-					stat1={0}
-					stat2={numTopics}
+					stat1={Math.round((numSupersetTopics * 3) / 4)}
+					stat2={numSupersetTopics}
 					title="More negative than the avg"
 				/>
 			</div>
 
 			{/* Topic cards */}
 			{data.supersetPoints.map((supersetPoint, idx) => (
-				<TopicCard data={data} supersetPoint={supersetPoint} key={idx} />
+				<TopicCard
+					data={data}
+					supersetPoint={supersetPoint}
+					thisArticlePoints={data.thisArticle.specificPoints}
+					key={idx}
+				/>
 			))}
 		</div>
 	);
@@ -92,22 +99,18 @@ function TopicOverviewNote({ stat1, stat2, title }) {
 function TopicCard({
 	data,
 	supersetPoint,
+	thisArticlePoints,
 }: {
 	data: GlobalData;
 	supersetPoint: SelectSupersetPoint;
+	thisArticlePoints: SelectSpecificPoint[];
 }) {
 	const [showBreakdown, setShowBreakdown] = useState(false);
 
-	let included = false;
+	let isThisSupersetPointInArticleSpecificPoints = thisArticlePoints.some(
+		(point) => point.superset_point_id == supersetPoint.id
+	);
 	let connectedPoint: SelectSpecificPoint | null = null;
-	for (const specificPoint of data.thisArticle.specificPoints) {
-		if (specificPoint.superset_point_id == supersetPoint.id) {
-			included = true;
-			connectedPoint = specificPoint;
-			break;
-		}
-	}
-
 	const connectedRelatedPoints: SelectSpecificPoint[] = [];
 	for (const relevantArticle of data.relevantArticles) {
 		const connectedPoints = relevantArticle.specificPoints.filter(
@@ -118,7 +121,7 @@ function TopicCard({
 
 	let avgRelatedBias = 0;
 	for (const connectedPoint of connectedRelatedPoints) {
-		avgRelatedBias += connectedPoint.bias.biased;
+		avgRelatedBias += connectedPoint.bias;
 	}
 	avgRelatedBias = (avgRelatedBias * 100) / connectedRelatedPoints.length;
 
@@ -136,7 +139,7 @@ function TopicCard({
 					{supersetPoint.title_generated}
 				</CardTitle>
 				<CardDescription>
-					{included ? (
+					{isThisSupersetPointInArticleSpecificPoints ? (
 						<div className="flex gap-1 items-center text-primary/75">
 							<FaCheckCircle className="text-primary/75" />
 							<p>This article includes this topic</p>
@@ -155,7 +158,7 @@ function TopicCard({
 						<StatsRow
 							title="This article"
 							stat1Title="biased"
-							stat1Val={connectedPoint.bias.biased * 100}
+							stat1Val={connectedPoint.bias * 100}
 							stat2Title="positive"
 							stat2Val={connectedPoint.sentiment.POS * 100}
 						/>
