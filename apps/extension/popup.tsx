@@ -10,7 +10,7 @@ import { Button } from "~components/ui/button";
 import "~style.css";
 
 import { Skeleton } from "~components/ui/skeleton";
-import { app } from "~lib/eden";
+import { app } from "~lib/trpc";
 
 import type { GlobalData } from "../backend/src";
 
